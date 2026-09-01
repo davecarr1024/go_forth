@@ -120,10 +120,54 @@ const activeTravelCatalog={
   kumamoto:[activity("CYCLING","Shirakawa riverbank","An easy urban ride between garden and dinner.")],
   kagoshima:[activity("CYCLING","Sakurajima loop","A ferry-to-volcano bicycle day with proper goblin energy.")]
 };
+const stay=(kind,title,detail,area,price)=>({kind,title,detail,area,price,mapUrl:"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(area+" hotel Japan"),lastReviewed:"2026-09",source:"curated starter data"});
+const specialStay={
+  sapporo:["Beer-and-baseball city night","Susukino or the station district makes an easy late dinner and an even easier next morning.","Sapporo Station / Susukino"],
+  hakodate:["Harbor-view decompression","Choose the bay or the hot-spring side when the night view is the whole point.","Hakodate Bay / Yunokawa"],
+  aomori:["Waterfront northern night","A compact harbor stay keeps the museum, market, and first train neatly together.","Aomori Station waterfront"],
+  akita:["Sake-and-rainy-day hideout","A central stay makes a low-key evening feel intentional rather than stranded.","Akita Station / Kawabata"],
+  morioka:["Noodle-city reset","Stay central for an unhurried regional dinner before the next long rail leg.","Morioka Station / Odori"],
+  sendai:["Stadium-night base","A central hotel leaves room for baseball, arcades, and a calm late return.","Sendai Station / Ichibancho"],
+  niigata:["Sake arcade overnight","Stay by the station for a minimal-friction Ponshukan-and-seafood evening.","Niigata Station / Bandai"],
+  yamagata:["Mountain branch overnight","A quiet central base leaves you ready for Yamadera or an onsen turn tomorrow.","Yamagata Station"],
+  nagano:["Temple-and-mountain morning","A station or Zenko-ji-side room makes an early shrine walk feel easy.","Nagano Station / Zenko-ji"],
+  kanazawa:["Garden-and-coffee overnight","Korimbo or the garden side lets you do Kenroku-en before the city wakes up.","Korimbo / Kenrokuen"],
+  toyama:["Mountain-window night","A central room keeps the evening park walk and a Tateyama decision open.","Toyama Station / Kansui Park"],
+  fukui:["Dinosaur branch sleepover","Stay near the station for a calm noodle dinner and a straightforward museum run.","Fukui Station"],
+  tsuruga:["New-station reset","A simple station stay is useful when the rail junction itself is the side quest.","Tsuruga Station"],
+  karuizawa:["Slow resort-town night","Old Karuizawa makes a coffee-and-bike day feel like a proper small escape.","Old Karuizawa / Karuizawa Station"],
+  tokyo:["Late-night urban base","Pick a dense neighborhood where arcade, curry, and a first train all coexist.","Ikebukuro / Shinagawa"],
+  kamakura:["Seaside temple overnight","A small stay near the water buys you a gentler Enoden morning.","Kamakura Station / Yuigahama"],
+  maibara:["Lake Biwa reset","A practical base near the station is enough for the castle-or-cycle branch.","Maibara Station / Hikone"],
+  kyoto:["Garden-before-crowds stay","Choose a quieter east-side or central base for an early garden start.","Higashiyama / Kyoto Station"],
+  nara:["Park-edge quiet night","Sleeping near Nara Park makes the deer-and-temple morning unusually easy.","Nara Park / Kintetsu Nara"],
+  osaka:["Goblin-mode city base","Nipponbashi or Namba keeps the rhythm games, food, and late energy close.","Namba / Nipponbashi"],
+  kobe:["Harbor-and-mountain split","A central stay lets you choose ropeway, coffeehouse, or waterfront at the last minute.","Sannomiya / Kitano"],
+  himeji:["Castle-opening overnight","Stay near the station so the castle can be a fresh-morning decision.","Himeji Station"],
+  okayama:["Crossroads comfort night","A station-side base is perfect for garden time before choosing your next branch.","Okayama Station / Korakuen"],
+  onomichi:["Hills-and-harbor sleepover","A waterfront or hillside stay makes the temple walk feel less like a day trip.","Onomichi waterfront"],
+  takamatsu:["Garden-and-udon base","A central stay is ideal for Ritsurin at opening and a flexible Shikoku day.","Takamatsu Station / Ritsurin"],
+  kotohira:["Onsen reward night","This is the place to trade efficiency for a ryokan, bath, and kaiseki dinner.","Kotohira Onsen"],
+  matsuyama:["Tram-and-onsen night","Dogo is the right kind of destination where the hotel can be the activity.","Dogo Onsen"],
+  hiroshima:["Baseball-and-dinner city night","Stay central for an easy stadium evening and a proper okonomiyaki dinner.","Hiroshima Station / Hatchobori"],
+  miyajimaguchi:["Island-first morning","A ferry-side base gives you the best chance at a quiet Miyajima start.","Miyajimaguchi / Miyajima"],
+  kokura:["Rail-museum city reset","A station-side hotel makes the museum, strait, and next shinkansen painless.","Kokura Station"],
+  hakata:["Ramen-and-first-train base","Stay by Hakata for an effortless late meal and a clean southern launch.","Hakata Station / Nakasu"],
+  nagasaki:["Hillside tram night","A city-center or harbor stay turns the sloped streets into the evening plan.","Nagasaki Station / Dejima"],
+  kumamoto:["Castle-city easy night","A central room gives you garden, castle, ramen, and a relaxed morning.","Kumamoto Station / Shimotori"],
+  kagoshima:["Volcano-view landing","Choose the central or bay side when the ferry and mountain are tomorrow's plan.","Kagoshima-Chuo / Tenmonkan"]
+};
 stations.forEach((station)=>{
   const active=activeTravelCatalog[station.id]||[];
   station.activities=[...(activityCatalog[station.id]||[]),...active];
   station.features.push(...active.map((item)=>item.kind==="HIKING"?"hike":"cycle"));
+  const [title,detail,area]=specialStay[station.id];
+  const late=station.features.includes("goblin")||station.features.includes("arcade")||station.features.includes("nightlife");
+  station.stays=[
+    stay("EASY LANDING","Station-side easy landing","Late check-in, a short walk from the platforms, and a reliable base for an early departure.",station.name+" Station","¥"),
+    stay("WORTH THE NIGHT",title,detail,area,"¥¥–¥¥¥"),
+    stay(late?"GOBLIN MODE":"CONVENIENCE BASE",late?"Late-night city base":"First-train reset",late?"Choose a dense, walkable pocket so dinner and a small side quest are still possible after the train.":"Keep the room close to the station when tomorrow's connection matters more than the hotel.",station.name+" Station","¥–¥¥")
+  ];
 });
 const railProfiles={
   "Hokuriku Shinkansen":{rideNote:"Fast north-country reach for a very different kind of day.",window:"Watch for mountain weather and long valley views.",ekiben:"Kanazawa and Tokyo both make easy ekiben starts."},

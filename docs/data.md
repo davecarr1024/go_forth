@@ -45,3 +45,12 @@ or opening-hour information. Travelers must verify those details directly.
 Each service pattern includes a short editorial ride note, a window-seat cue,
 and an ekiben suggestion. These are experience prompts for a visual day plan,
 not service guarantees or onboard-food claims.
+
+## Stay ideas
+
+Every endpoint has three curated ways to stay: an easy station landing, a
+destination-specific "worth the night" option, and either a goblin-mode city
+base or a convenience base for the first train. They carry a rough price-band
+prompt, an area, short rationale, and a map-search link. They are not hotel
+listings, availability, booking advice, accessibility assertions, or price
+quotes; use the link to find and validate current choices.

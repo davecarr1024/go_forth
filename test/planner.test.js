@@ -43,3 +43,9 @@ test("activities and rail legs carry usable planning metadata", () => {
   assert.match(garden.mapUrl, /google\.com\/maps/);
   assert.ok(services.every((service) => service.rideNote && service.window && service.ekiben));
 });
+
+test("every destination has categorized, sourceable stay ideas", () => {
+  assert.ok(stations.every((station) => station.stays?.length === 3));
+  assert.ok(stations.every((station) => station.stays.every((stay) => stay.kind && stay.title && stay.area && stay.mapUrl)));
+  assert.equal(stations.find((station) => station.id === "kanazawa").stays[1].kind, "WORTH THE NIGHT");
+});
