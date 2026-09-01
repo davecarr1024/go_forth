@@ -10,7 +10,8 @@ export const modes = {
 export const featureLabels = {
   scenic: "Scenic", arcade: "Arcades", "easy-food": "Easy food", baseball: "Baseball",
   garden: "Gardens", onsen: "Onsen", railfan: "Railway oddity", goblin: "Goblin energy",
-  "easy-overnight": "Easy overnight", sea: "By the water", castle: "Castle", coffee: "Coffee"
+  "easy-overnight": "Easy overnight", sea: "By the water", castle: "Castle", coffee: "Coffee",
+  hike: "Hiking", cycle: "Cycling"
 };
 
 export function plan({ stations, services, origin, latestMinutes, maxTransfers, mode = "normal", desiredFeatures = [] }) {

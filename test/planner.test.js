@@ -25,3 +25,14 @@ test("starter network has broad destination coverage and feature-led results", (
   const results = plan({ stations, services, origin: "kanazawa", latestMinutes: 420, maxTransfers: 2, mode: "normal", desiredFeatures: ["baseball"] });
   assert.ok(results.some((result) => result.reasons.includes("Baseball")));
 });
+
+test("every destination has concrete starter activities", () => {
+  assert.ok(stations.every((station) => station.activities?.length >= 2));
+  assert.equal(stations.find((station) => station.id === "kanazawa").activities[0].name, "Kenroku-en");
+});
+
+test("active-travel activities are available as destination traits", () => {
+  const onomichi = stations.find((station) => station.id === "onomichi");
+  assert.ok(onomichi.features.includes("cycle"));
+  assert.ok(onomichi.activities.some((activity) => activity.name === "Shimanami Kaido"));
+});

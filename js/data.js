@@ -36,6 +36,83 @@ stop("nagasaki","Nagasaki",0,98,20,["tram","sea","scenic","coffee","goblin"],{ho
 stop("kumamoto","Kumamoto",10,99,21,["castle","ramen","garden","easy-food","easy-overnight"],{hotel:8,food:9,interest:9}),
 stop("kagoshima","Kagoshima",17,106,23,["volcano","onsen","scenic","ferry","easy-food"],{hotel:8,food:8,interest:10})
 ];
+const activity=(kind,name,detail)=>({kind,name,detail});
+const activityCatalog={
+  sapporo:[activity("BASEBALL","ES CON FIELD HOKKAIDO","A day-game side quest and an easy food-heavy evening."),activity("ARCADE","Susukino","Neon, games, ramen, and a no-planning-needed night.")],
+  hakodate:[activity("VIEW","Mt. Hakodate","Ride up for the night view, then descend into the old port streets."),activity("FOOD","Morning Market","Seafood breakfast before deciding what comes next.")],
+  aomori:[activity("ART","Nebuta Museum WA RASSE","A compact, vivid rainy-day stop directly by the station."),activity("FOOD","Aomori apple sweets","Coffee-and-pastry wandering with a strong local angle.")],
+  akita:[activity("CULTURE","Akita Museum of Art","A calm city-center stop with strong indoor appeal."),activity("FOOD","Kiritanpo","A specifically northern, comforting dinner mission.")],
+  morioka:[activity("FOOD","Wanko soba","A very particular regional meal with built-in story value."),activity("ONSEN","Tsunagi Onsen","An easy decompression branch from the city.")],
+  sendai:[activity("BASEBALL","Rakuten Mobile Park","A genuinely useful stadium-night endpoint."),activity("FOOD","Gyutan alley","Beef tongue dinner close to the station rhythm.")],
+  niigata:[activity("SAKE","Ponshukan","Station sake-tasting arcade: excellent train-day punctuation."),activity("FOOD","Bandai Bridge waterfront","Seafood and a riverside evening walk.")],
+  yamagata:[activity("ONSEN","Yamadera","Temple stairs and mountain views when the energy is there."),activity("FOOD","Cherries and fruit parfaits","A seasonal dessert-forward landing.")],
+  nagano:[activity("TEMPLE","Zenko-ji","A generous, walkable anchor for an unplanned morning."),activity("FOOD","Shinshu soba","Simple, reliable station-city food.")],
+  kanazawa:[activity("GARDEN","Kenroku-en","Arrive at opening; coffee by the big pond afterwards."),activity("FOOD","Omicho Market","Seafood breakfast or a flexible lunch mission.")],
+  toyama:[activity("SCENIC","Kansui Park","Water, mountains, and a low-friction evening walk."),activity("FOOD","Toyama Bay sushi","A concrete seafood dinner reason to stop.")],
+  fukui:[activity("WEIRD","Fukui Prefectural Dinosaur Museum","A real, delightful reason to take the branch."),activity("FOOD","Echizen soba","Local noodles and a calm station night.")],
+  tsuruga:[activity("RAIL","New Hokuriku station","Infrastructure nerdery plus an easy southward reset."),activity("FOOD","Seafood bowl","A short, satisfying harbor-city dinner.")],
+  karuizawa:[activity("COFFEE","Old Karuizawa Ginza","Coffee, bakeries, and slow wandering."),activity("SCENIC","Kumoba Pond","A quiet nature loop close to the resort-town core.")],
+  tokyo:[activity("ARCADE","Akihabara","Rhythm games, model shops, and late curry."),activity("BASEBALL","Tokyo Dome","A stadium-night option with dense food nearby.")],
+  kamakura:[activity("SCENIC","Enoden to the water","A small railway adventure with a seaside payoff."),activity("TEMPLE","Great Buddha","A compact, iconic one-way tourist branch.")],
+  maibara:[activity("CASTLE","Hikone Castle","A short local branch for a full castle-and-moat afternoon."),activity("CYCLING","Lake Biwa shore","A flat, waterside continuation when the trains have had their turn.")],
+  kyoto:[activity("GARDEN","Murin-an","A quieter garden counterweight to the big headline sites."),activity("FOOD","Nishiki Market","Snack-forward wandering that does not require a reservation.")],
+  nara:[activity("TEMPLE","Todai-ji and Nara Park","A coherent afternoon of deer, temple scale, and walking."),activity("FOOD","Kakinoha-zushi","Portable leaf-wrapped sushi with regional texture.")],
+  osaka:[activity("ARCADE","DenDen Town","Rhythm games, arcades, and the exact right kind of late night."),activity("BASEBALL","Hanshin Tigers","A high-energy game night with a very specific local feeling.")],
+  kobe:[activity("VIEW","Nunobiki Ropeway","A fast mountain-and-harbor perspective shift."),activity("FOOD","Kobe coffeehouses","A civilized, low-energy dinner-and-coffee landing.")],
+  himeji:[activity("CASTLE","Himeji Castle","The castle is close enough to make a one-way stop feel obvious."),activity("GARDEN","Koko-en","A garden pair that makes the castle day breathe.")],
+  okayama:[activity("GARDEN","Koraku-en","A major garden directly useful to a rail itinerary."),activity("FOOD","Demi-katsu","Comfort-food dinner before choosing Shikoku or west tomorrow.")],
+  onomichi:[activity("SCENIC","Temple Walk","Hills, lanes, cats, and views over the Inland Sea."),activity("BIKE","Shimanami Kaido start","A branch for when the railway day wants a bicycle sequel.")],
+  takamatsu:[activity("GARDEN","Ritsurin Garden","An opening-time garden with an easy city landing."),activity("FOOD","Sanuki udon","The meal itself is a practical reason to be here.")],
+  kotohira:[activity("ONSEN","Kotohira onsen","A proper one-night reward at the end of a branch."),activity("TEMPLE","Konpira-san","A climb with a clear sense of arrival.")],
+  matsuyama:[activity("ONSEN","Dogo Onsen","A classic bathhouse endpoint with tram texture."),activity("CASTLE","Matsuyama Castle","Ropeway-or-walk castle hill above town.")],
+  hiroshima:[activity("BASEBALL","Mazda Zoom-Zoom Stadium","A real evening event that makes the endpoint feel complete."),activity("FOOD","Okonomiyaki","Layered Hiroshima-style dinner, easy to choose.")],
+  miyajimaguchi:[activity("SEA","Ferry to Miyajima","The water crossing is part of the activity, not transit."),activity("FOOD","Oysters and momiji manju","A compact, delicious island branch.")],
+  kokura:[activity("RAIL","Kyushu Railway Museum","A serious rail side quest just across the strait."),activity("FOOD","Yaki-udon","An easy local dinner with real origin-story energy.")],
+  hakata:[activity("BASEBALL","Fukuoka SoftBank Hawks","A stadium-night endpoint with all-city convenience."),activity("FOOD","Yatai ramen","Late, flexible street-stall ramen energy.")],
+  nagasaki:[activity("TRAM","Streetcar wandering","The trams are a gentle way to make the city the activity."),activity("VIEW","Inasayama night view","A dramatic finish to a southern rail day.")],
+  kumamoto:[activity("CASTLE","Kumamoto Castle","A major fortress visit with a city-center base."),activity("GARDEN","Suizenji Jojuen","A compact garden reset after the castle.")],
+  kagoshima:[activity("GARDEN","Sengan-en","Garden, volcano view, and a deeply specific southern landing."),activity("FERRY","Sakurajima","A ferry-and-volcano branch that makes tomorrow interesting.")]
+};
+const activeTravelCatalog={
+  sapporo:[activity("HIKING","Mt. Moiwa","A short city-edge summit for a broad view over Sapporo.")],
+  hakodate:[activity("HIKING","Mt. Hakodate trails","Walk or ropeway up, then let the night view finish the day.")],
+  aomori:[activity("CYCLING","Aomori Bay loop","A low-stakes waterfront spin from the station area.")],
+  akita:[activity("CYCLING","Omono River paths","A calm river-side ride when the city needs more air.")],
+  morioka:[activity("HIKING","Mt. Iwate foothills","A real mountain day branch from a useful rail city.")],
+  sendai:[activity("CYCLING","Matsushima Bay ride","A coastal extension for a day that wants water and islands.")],
+  niigata:[activity("CYCLING","Shinano River cycleway","Flat river riding with an easy city return.")],
+  yamagata:[activity("HIKING","Yamadera steps","A vertical little pilgrimage with a clear payoff.")],
+  nagano:[activity("HIKING","Togakushi trails","Forest-and-shrine hiking from a mountain gateway.")],
+  kanazawa:[activity("CYCLING","Asano River lanes","A gentle bike loop through tea-district texture.")],
+  toyama:[activity("HIKING","Tateyama approach","A big-mountain continuation when the weather earns it.")],
+  fukui:[activity("CYCLING","Kuzuryu River paths","A quieter, lower-traffic reason to linger.")],
+  tsuruga:[activity("CYCLING","Kehi coast","Harbor-and-coast riding after the station side quest.")],
+  karuizawa:[activity("CYCLING","Karuizawa lanes","The classic relaxed resort-town bicycle afternoon.")],
+  tokyo:[activity("CYCLING","Arakawa riverbank","A wide, unhurried escape from central Tokyo.")],
+  kamakura:[activity("HIKING","Daibutsu hiking trail","A wooded connector between temples and the big Buddha.")],
+  kyoto:[activity("HIKING","Fushimi Inari early","A pre-crowd mountain-shrine climb with a simple rail start.")],
+  nara:[activity("HIKING","Kasugayama paths","Temple-country walking just behind Nara Park.")],
+  osaka:[activity("CYCLING","Nakanoshima loop","A city-and-river ride between coffee and dinner.")],
+  kobe:[activity("HIKING","Nunobiki Falls trail","An immediately accessible mountain path above the station.")],
+  himeji:[activity("CYCLING","Castle-town lanes","An easy bike-scale way to connect castle and garden.")],
+  okayama:[activity("CYCLING","Kibiji route","A gentle historic-country ride from an easy rail base.")],
+  onomichi:[activity("CYCLING","Shimanami Kaido","The canonical bridge-and-island cycling continuation.")],
+  takamatsu:[activity("CYCLING","Setouchi coast","A light sea-edge spin between udon stops.")],
+  kotohira:[activity("HIKING","Konpira stair climb","The destination itself comes with its own ascent.")],
+  matsuyama:[activity("CYCLING","Dogo to the sea","Tram-town cycling with an onsen landing afterward.")],
+  hiroshima:[activity("CYCLING","Peace Boulevard","A flat city ride linking central stops and river views.")],
+  miyajimaguchi:[activity("HIKING","Misen on Miyajima","Ferry, shrine, and mountain in one small adventure.")],
+  kokura:[activity("CYCLING","Kanmon waterfront","Ride the strait-side paths after the railway museum.")],
+  hakata:[activity("CYCLING","Naka River to the bay","A loose city ride between food neighborhoods.")],
+  nagasaki:[activity("HIKING","Glover hillside walk","Steep lanes, views, and a city that rewards wandering uphill.")],
+  kumamoto:[activity("CYCLING","Shirakawa riverbank","An easy urban ride between garden and dinner.")],
+  kagoshima:[activity("CYCLING","Sakurajima loop","A ferry-to-volcano bicycle day with proper goblin energy.")]
+};
+stations.forEach((station)=>{
+  const active=activeTravelCatalog[station.id]||[];
+  station.activities=[...(activityCatalog[station.id]||[]),...active];
+  station.features.push(...active.map((item)=>item.kind==="HIKING"?"hike":"cycle"));
+});
 const edge=(from,to,minutes,headway,line,extras={})=>({from,to,minutes,headway,line,confidence:headway>35?"medium":"high",...extras});
 const pair=(a,b,minutes,headway,line,extras)=>[edge(a,b,minutes,headway,line,extras),edge(b,a,minutes,headway,line,extras)];
 export const services=[
