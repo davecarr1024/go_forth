@@ -7,7 +7,13 @@ export const modes = {
   goblin: { label: "Goblin mode", icon: "⌁", copy: "Plausible, unusual, yours.", transfer: 28, train: 1, scenic: 8, green: 2, gran: 1, south: 2, odd: 10 }
 };
 
-export function plan({ stations, services, origin, latestMinutes, maxTransfers, mode = "normal" }) {
+export const featureLabels = {
+  scenic: "Scenic", arcade: "Arcades", "easy-food": "Easy food", baseball: "Baseball",
+  garden: "Gardens", onsen: "Onsen", railfan: "Railway oddity", goblin: "Goblin energy",
+  "easy-overnight": "Easy overnight", sea: "By the water", castle: "Castle", coffee: "Coffee"
+};
+
+export function plan({ stations, services, origin, latestMinutes, maxTransfers, mode = "normal", desiredFeatures = [] }) {
   const stationMap = new Map(stations.map((station) => [station.id, station]));
   const weights = modes[mode];
   const routes = new Map([[origin, { minutes: 0, edges: [], transfers: 0 }]]);
@@ -25,9 +31,10 @@ export function plan({ stations, services, origin, latestMinutes, maxTransfers, 
   for (const [id, route] of routes) {
     const destination = stationMap.get(id);
     if (id === origin || !destination?.endpoint) continue;
-    const stats = route.edges.reduce((s, e) => ({ scenic: s.scenic + (e.scenic || 0), railfan: s.railfan + (e.railfan || 0), green: s.green || e.green, gran: s.gran || e.gran, confidence: s.confidence === "medium" || e.confidence === "medium" ? "medium" : "high" }), { scenic: 0, railfan: 0, green: false, gran: false, confidence: "high" });
-    const score = (destination.hotel + destination.food + destination.interest) * 2 + destination.south * weights.south + stats.scenic * weights.scenic + stats.railfan * weights.odd + Number(stats.green) * weights.green + Number(stats.gran) * weights.gran + route.edges.reduce((sum, e) => sum + e.minutes, 0) * weights.train - route.minutes * .25 - route.transfers * weights.transfer - (stats.confidence === "medium" ? 18 : 0);
-    options.push({ ...route, destination, stats, score });
+    const stats = route.edges.reduce((s, e) => ({ scenic: s.scenic + (e.scenic || 0), railfan: s.railfan + (e.railfan || 0), green: Boolean(s.green || e.green), gran: Boolean(s.gran || e.gran), confidence: s.confidence === "medium" || e.confidence === "medium" ? "medium" : "high" }), { scenic: 0, railfan: 0, green: false, gran: false, confidence: "high" });
+    const matches = destination.features.filter((feature) => desiredFeatures.includes(feature));
+    const score = (destination.hotel + destination.food + destination.interest) * 2 + destination.south * weights.south + stats.scenic * weights.scenic + stats.railfan * weights.odd + Number(stats.green) * weights.green + Number(stats.gran) * weights.gran + matches.length * 28 + route.edges.reduce((sum, e) => sum + e.minutes, 0) * weights.train - route.minutes * .25 - route.transfers * weights.transfer - (stats.confidence === "medium" ? 18 : 0);
+    options.push({ ...route, destination, stats, matches, score });
   }
   const used = new Set();
   return options.sort((a, b) => b.score - a.score).filter((option) => {
@@ -46,5 +53,5 @@ function reasons(option, weights) {
   if (option.transfers === 0) reasons.push("no changes");
   if (option.stats.railfan) reasons.push("a little railway weirdness");
   reasons.push("easy place to wake up tomorrow");
-  return reasons.slice(0, 3);
+  return [...option.matches.map((feature) => featureLabels[feature]), ...reasons].slice(0, 3);
 }

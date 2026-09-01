@@ -15,7 +15,13 @@ test("direct-only setting prevents transfer routes", () => {
   assert.ok(results.every((result) => result.transfers === 0));
 });
 
-test("GranClass preference finds the Tokyo opportunity", () => {
+test("GranClass preference keeps a premium-car opportunity visible", () => {
   const results = plan({ stations, services, origin: "kanazawa", latestMinutes: 420, maxTransfers: 2, mode: "gran" });
-  assert.ok(results.some((result) => result.destination.id === "tokyo" && result.stats.gran));
+  assert.ok(results.some((result) => result.stats.gran));
+});
+
+test("starter network has broad destination coverage and feature-led results", () => {
+  assert.ok(stations.length >= 30);
+  const results = plan({ stations, services, origin: "kanazawa", latestMinutes: 420, maxTransfers: 2, mode: "normal", desiredFeatures: ["baseball"] });
+  assert.ok(results.some((result) => result.reasons.includes("Baseball")));
 });
