@@ -28,6 +28,18 @@ Modes change preference weights, not reachability rules:
 - **GranClass** rewards an optional premium segment.
 - **Goblin** rewards odd, scenic, and railfan-interesting routes.
 
+## Right-now interaction
+
+The primary surface is a compact Today bar: current station, local time, and
+the comfortable arrival boundary. The traveler selects a mood and a desired
+amount of rail time rather than laboriously configuring an itinerary.
+
+Every result supports a new origin in one action. The planner also has an
+explicit stay-here result, an "I'm cooked" low-friction mode, session-only
+"not today" exclusions, and a reroll. These choices express the central rule:
+movement is optional, reassessment is always available, and no plan is owed
+obedience.
+
 ## First runnable moment
 
 Starting in Kanazawa at 09:00, the app returns several distinct, explainable

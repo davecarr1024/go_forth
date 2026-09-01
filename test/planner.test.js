@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { stations, services } from "../js/data.js";
-import { plan } from "../js/planner.js";
+import { plan, timeBands } from "../js/planner.js";
 
 test("Kanazawa has multiple reachable adventures", () => {
   const results = plan({ stations, services, origin: "kanazawa", latestMinutes: 420, maxTransfers: 2, mode: "normal" });
@@ -54,4 +54,15 @@ test("map searches carry the destination city for disambiguation", () => {
   const kanazawa = stations.find((station) => station.id === "kanazawa");
   assert.match(decodeURIComponent(kanazawa.activities[0].mapUrl), /Kenroku-en Kanazawa Japan/);
   assert.match(decodeURIComponent(kanazawa.stays[0].mapUrl), /Kanazawa Station Kanazawa Japan/);
+});
+
+test("planner can recommend staying put and honor time bands", () => {
+  const results = plan({ stations, services, origin: "kanazawa", latestMinutes: 420, maxTransfers: 2, mode: "quiet", desiredFeatures: ["garden"], includeOrigin: true, timeBand: "nearby" });
+  assert.ok(results.some((result) => result.stay && result.destination.id === "kanazawa"));
+  assert.equal(timeBands.nearby.max, 90);
+});
+
+test("excluded places do not return in a reroll", () => {
+  const results = plan({ stations, services, origin: "kanazawa", latestMinutes: 420, maxTransfers: 2, mode: "normal", excluded: ["toyama"] });
+  assert.ok(results.every((result) => result.destination.id !== "toyama"));
 });
