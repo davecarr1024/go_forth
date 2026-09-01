@@ -49,3 +49,9 @@ test("every destination has categorized, sourceable stay ideas", () => {
   assert.ok(stations.every((station) => station.stays.every((stay) => stay.kind && stay.title && stay.area && stay.mapUrl)));
   assert.equal(stations.find((station) => station.id === "kanazawa").stays[1].kind, "WORTH THE NIGHT");
 });
+
+test("map searches carry the destination city for disambiguation", () => {
+  const kanazawa = stations.find((station) => station.id === "kanazawa");
+  assert.match(decodeURIComponent(kanazawa.activities[0].mapUrl), /Kenroku-en Kanazawa Japan/);
+  assert.match(decodeURIComponent(kanazawa.stays[0].mapUrl), /Kanazawa Station Kanazawa Japan/);
+});

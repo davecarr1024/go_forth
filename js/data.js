@@ -168,6 +168,8 @@ stations.forEach((station)=>{
     stay("WORTH THE NIGHT",title,detail,area,"¥¥–¥¥¥"),
     stay(late?"GOBLIN MODE":"CONVENIENCE BASE",late?"Late-night city base":"First-train reset",late?"Choose a dense, walkable pocket so dinner and a small side quest are still possible after the train.":"Keep the room close to the station when tomorrow's connection matters more than the hotel.",station.name+" Station","¥–¥¥")
   ];
+  station.activities.forEach((item)=>{ item.mapUrl="https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(item.name+" "+station.name+" Japan"); });
+  station.stays.forEach((item)=>{ item.mapUrl="https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(item.area+" "+station.name+" Japan"); });
 });
 const railProfiles={
   "Hokuriku Shinkansen":{rideNote:"Fast north-country reach for a very different kind of day.",window:"Watch for mountain weather and long valley views.",ekiben:"Kanazawa and Tokyo both make easy ekiben starts."},

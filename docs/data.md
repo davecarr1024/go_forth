@@ -58,7 +58,9 @@ quotes; use the link to find and validate current choices.
 ### Hotel-finding loop
 
 The interface accepts a check-in date, nights, and guests, then hands the
-active stay strategy to a live web search. It cannot inspect availability or
+active stay strategy to Hotels.com, prefilled with the current local date by
+default. Every activity and stay map handoff includes the destination city to
+avoid ambiguous landmark searches. It cannot inspect availability or
 complete a booking. Instead, the traveler explicitly records that the current
 strategy did not fit (sold out, wrong price, wrong feel), and the interface
 advances through destination-specific alternatives while preserving the rest
