@@ -36,3 +36,10 @@ test("active-travel activities are available as destination traits", () => {
   assert.ok(onomichi.features.includes("cycle"));
   assert.ok(onomichi.activities.some((activity) => activity.name === "Shimanami Kaido"));
 });
+
+test("activities and rail legs carry usable planning metadata", () => {
+  const garden = stations.find((station) => station.id === "kanazawa").activities[0];
+  assert.equal(garden.best, "morning");
+  assert.match(garden.mapUrl, /google\.com\/maps/);
+  assert.ok(services.every((service) => service.rideNote && service.window && service.ekiben));
+});

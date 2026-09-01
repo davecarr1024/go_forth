@@ -30,3 +30,18 @@ Hiking and cycling are both destination traits and activity categories. Their
 activity cards name a starter trail, hill walk, waterfront loop, or regional
 cycle continuation; they are not route-safety, weather, equipment, or trail
 condition advice.
+
+## Practical activity context
+
+Each starter activity also has deliberately coarse planning metadata: a best
+time of day, rough duration, effort, likely station friction, and whether a
+reservation is worth checking. It includes a Google Maps search URL, a source
+marker of "curated starter data", and a review month. This makes the interface
+inspectable without pretending it has live venue, accessibility, trail, event,
+or opening-hour information. Travelers must verify those details directly.
+
+## Rail-day cues
+
+Each service pattern includes a short editorial ride note, a window-seat cue,
+and an ekiben suggestion. These are experience prompts for a visual day plan,
+not service guarantees or onboard-food claims.

@@ -36,7 +36,19 @@ stop("nagasaki","Nagasaki",0,98,20,["tram","sea","scenic","coffee","goblin"],{ho
 stop("kumamoto","Kumamoto",10,99,21,["castle","ramen","garden","easy-food","easy-overnight"],{hotel:8,food:9,interest:9}),
 stop("kagoshima","Kagoshima",17,106,23,["volcano","onsen","scenic","ferry","easy-food"],{hotel:8,food:8,interest:10})
 ];
-const activity=(kind,name,detail)=>({kind,name,detail});
+const activityProfiles={
+  GARDEN:{best:"morning",duration:"90 min",effort:"easy walk",reservation:"none",fromStation:"short local ride"},
+  FOOD:{best:"lunch or dinner",duration:"60 min",effort:"easy",reservation:"usually none",fromStation:"station area"},
+  BASEBALL:{best:"evening",duration:"3–4 hr",effort:"easy",reservation:"ticket helpful",fromStation:"urban transit"},
+  ARCADE:{best:"late afternoon",duration:"1–3 hr",effort:"easy",reservation:"none",fromStation:"station area"},
+  HIKING:{best:"morning",duration:"2–5 hr",effort:"active",reservation:"none",fromStation:"local connection"},
+  CYCLING:{best:"daytime",duration:"2–5 hr",effort:"active",reservation:"rental helpful",fromStation:"station area"},
+  ONSEN:{best:"late afternoon",duration:"1–2 hr",effort:"easy",reservation:"check ahead",fromStation:"local connection"},
+  VIEW:{best:"sunset",duration:"90 min",effort:"some walking",reservation:"none",fromStation:"urban transit"},
+  SCENIC:{best:"daytime",duration:"90 min",effort:"easy walk",reservation:"none",fromStation:"walkable"},
+  default:{best:"flexible",duration:"1–2 hr",effort:"easy",reservation:"check ahead",fromStation:"local connection"}
+};
+const activity=(kind,name,detail)=>({kind,name,detail,...(activityProfiles[kind]||activityProfiles.default),mapUrl:"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(name+" Japan"),lastReviewed:"2026-09",source:"curated starter data"});
 const activityCatalog={
   sapporo:[activity("BASEBALL","ES CON FIELD HOKKAIDO","A day-game side quest and an easy food-heavy evening."),activity("ARCADE","Susukino","Neon, games, ramen, and a no-planning-needed night.")],
   hakodate:[activity("VIEW","Mt. Hakodate","Ride up for the night view, then descend into the old port streets."),activity("FOOD","Morning Market","Seafood breakfast before deciding what comes next.")],
@@ -113,7 +125,20 @@ stations.forEach((station)=>{
   station.activities=[...(activityCatalog[station.id]||[]),...active];
   station.features.push(...active.map((item)=>item.kind==="HIKING"?"hike":"cycle"));
 });
-const edge=(from,to,minutes,headway,line,extras={})=>({from,to,minutes,headway,line,confidence:headway>35?"medium":"high",...extras});
+const railProfiles={
+  "Hokuriku Shinkansen":{rideNote:"Fast north-country reach for a very different kind of day.",window:"Watch for mountain weather and long valley views.",ekiben:"Kanazawa and Tokyo both make easy ekiben starts."},
+  "Tohoku Shinkansen":{rideNote:"A long, clean line for committing to a bigger geographic shift.",window:"The landscape opens out as the train heads north.",ekiben:"Bring an ekiben for the longer leg."},
+  "Hokkaido / Tohoku Shinkansen":{rideNote:"A threshold-crossing ride: mainland to the far north.",window:"Keep an eye out for changing coast and northern light.",ekiben:"Hakodate is an especially good snack reset."},
+  "Limited Express Hokuto":{rideNote:"A proper train day with an arrival that feels earned.",window:"Coast, forest, and wide northern skies do the work.",ekiben:"Pick up something substantial before boarding."},
+  "Sanyo Shinkansen":{rideNote:"A quick westward leap that leaves room for the destination.",window:"Sit back; this is the efficient connector.",ekiben:"Station bento works well for a short rail lunch."},
+  "Marine Liner":{rideNote:"The sea crossing is the reason to take this train.",window:"Cross the Seto Ohashi bridge with water on both sides.",ekiben:"Grab a small snack in Okayama before the crossing."},
+  "Limited Express Shiokaze":{rideNote:"A scenic Shikoku branch with a more old-school rail rhythm.",window:"The Seto crossing is the visual reward.",ekiben:"Okayama is the easy place to stock up."},
+  "Nishi-Kyushu Shinkansen":{rideNote:"A southern branch that turns the route into the adventure.",window:"The western landscape gets greener and more folded.",ekiben:"Hakata is the reliable boarding-food stop."},
+  "Kyushu Shinkansen":{rideNote:"A fast southern extension with room left for side quests.",window:"Look out for the broad, volcanic south-country feel.",ekiben:"Hakata and Kumamoto are useful food stops."},
+  default:{rideNote:"A useful rail link that keeps the day open.",window:"Take the window seat if the weather is good.",ekiben:"A station snack makes the connection easier."}
+};
+const railProfile=(line)=>railProfiles[line]||railProfiles.default;
+const edge=(from,to,minutes,headway,line,extras={})=>({from,to,minutes,headway,line,confidence:headway>35?"medium":"high",...railProfile(line),...extras});
 const pair=(a,b,minutes,headway,line,extras)=>[edge(a,b,minutes,headway,line,extras),edge(b,a,minutes,headway,line,extras)];
 export const services=[
 ...pair("sapporo","hakodate",230,60,"Limited Express Hokuto",{green:true,scenic:8}),
