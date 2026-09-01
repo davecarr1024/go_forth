@@ -63,7 +63,8 @@ function openPlan(destinationId) {
 }
 function render() {
   const effectiveMinutes = state.mode === "cooked" ? Math.min(state.latestMinutes, 180) : state.latestMinutes;
-  const results = plan({ stations, services, origin: state.origin, latestMinutes: effectiveMinutes, maxTransfers: state.mode === "cooked" ? 0 : state.transfers, mode: state.mode, desiredFeatures: state.features, timeBand: state.timeBand, includeOrigin: true, excluded: state.excluded });
+  const originMatches = stationMap.get(state.origin).features.some((feature) => state.features.includes(feature));
+  const results = plan({ stations, services, origin: state.origin, latestMinutes: effectiveMinutes, maxTransfers: state.mode === "cooked" ? 0 : state.transfers, mode: state.mode, desiredFeatures: state.features, timeBand: state.timeBand, includeOrigin: originMatches || ["quiet", "cooked"].includes(state.mode), excluded: state.excluded });
   visibleResults = results;
   const originOptions = stations.filter((station) => station.endpoint).map((station) => '<option value="' + station.id + '"' + (station.id === state.origin ? " selected" : "") + ">" + station.name + "</option>").join("");
   const now = new Date();

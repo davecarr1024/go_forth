@@ -55,13 +55,14 @@ export function plan({ stations, services, origin, latestMinutes, maxTransfers, 
     const score = (destination.hotel + destination.food + destination.interest) * 2 + matches.length * 38 + (mode === "quiet" || mode === "cooked" ? 45 : 0);
     options.push({ minutes: 0, edges: [], transfers: 0, destination, stats: { scenic: 0, railfan: 0, green: false, gran: false, confidence: "high" }, matches, score, stay: true });
   }
+  const stays = options.filter((option) => option.stay);
   const used = new Set();
-  return options.sort((a, b) => b.score - a.score).filter((option) => {
-    if (option.stay) return true;
+  const moving = options.filter((option) => !option.stay).sort((a, b) => b.score - a.score).filter((option) => {
     const key = String(option.stats.gran) + String(option.stats.scenic > 10) + String(option.destination.south > 7);
     if (used.has(key) && used.size > 3) return false;
     used.add(key); return true;
-  }).slice(0, 4).map((option, index) => ({ ...option, kind: option.stay ? "Stay here" : ["Easy", "Best fit", "Go farther", "Wildcard"][index], reasons: reasons(option, weights) }));
+  });
+  return [...stays, ...moving].slice(0, 4).map((option, index) => ({ ...option, kind: option.stay ? "Stay here" : ["Easy", "Best fit", "Go farther", "Wildcard"][index], reasons: reasons(option, weights) }));
 }
 
 function reasons(option, weights) {
