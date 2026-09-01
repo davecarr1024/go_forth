@@ -23,7 +23,7 @@ of endpoint cards.
 Modes change preference weights, not reachability rules:
 
 - **Quiet** heavily penalizes transfers and sparse services.
-- **Train Day** rewards comfortable, scenic railway time.
+- **All damn day** rail-time intent rewards comfortable, scenic railway time.
 - **Progress** rewards southward movement.
 - **GranClass** rewards an optional premium segment.
 - **Goblin** rewards odd, scenic, and railfan-interesting routes.

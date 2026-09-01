@@ -1,7 +1,6 @@
 export const modes = {
   normal: { label: "Open day", icon: "✦", copy: "A little comfort, a little surprise.", transfer: 20, train: 1, scenic: 2, green: 7, gran: 4, south: 2, odd: 1 },
   quiet: { label: "Easy day", icon: "◌", copy: "Fewer changes. Easy landing.", transfer: 70, train: 0.25, scenic: 1, green: 10, gran: 6, south: 1, odd: -4 },
-  train: { label: "Train day", icon: "↝", copy: "Let the railway be the activity.", transfer: 25, train: 1.8, scenic: 7, green: 11, gran: 10, south: 1, odd: 3 },
   progress: { label: "Go south", icon: "↓", copy: "Change tomorrow's starting point.", transfer: 25, train: 0.6, scenic: 2, green: 5, gran: 3, south: 11, odd: 1 },
   gran: { label: "GranClass", icon: "◇", copy: "A small splurge, if it fits.", transfer: 30, train: 0.8, scenic: 4, green: 9, gran: 32, south: 2, odd: 1 },
   goblin: { label: "Goblin mode", icon: "⌁", copy: "Plausible, unusual, yours.", transfer: 28, train: 1, scenic: 8, green: 2, gran: 1, south: 2, odd: 10 },
@@ -46,7 +45,8 @@ export function plan({ stations, services, origin, latestMinutes, maxTransfers, 
     const matches = destination.features.filter((feature) => desiredFeatures.includes(feature));
     const railMinutes = route.edges.reduce((sum, e) => sum + e.minutes, 0);
     const inBand = railMinutes >= band.min && railMinutes <= band.max;
-    const score = (destination.hotel + destination.food + destination.interest) * 2 + destination.south * weights.south + stats.scenic * weights.scenic + stats.railfan * weights.odd + Number(stats.green) * weights.green + Number(stats.gran) * weights.gran + matches.length * 28 + railMinutes * weights.train - route.minutes * .25 - route.transfers * weights.transfer - (stats.confidence === "medium" ? 18 : 0) + (inBand ? 32 : timeBand === "flexible" ? 0 : -16);
+    const allDayRailBonus = timeBand === "all" ? railMinutes * .75 + stats.scenic * 5 + Number(stats.green) * 8 : 0;
+    const score = (destination.hotel + destination.food + destination.interest) * 2 + destination.south * weights.south + stats.scenic * weights.scenic + stats.railfan * weights.odd + Number(stats.green) * weights.green + Number(stats.gran) * weights.gran + matches.length * 28 + railMinutes * weights.train - route.minutes * .25 - route.transfers * weights.transfer - (stats.confidence === "medium" ? 18 : 0) + (inBand ? 32 : timeBand === "flexible" ? 0 : -16) + allDayRailBonus;
     options.push({ ...route, destination, stats, matches, score });
   }
   if (includeOrigin && !excluded.includes(origin)) {

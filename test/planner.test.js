@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { stations, services } from "../js/data.js";
-import { plan, timeBands } from "../js/planner.js";
+import { modes, plan, timeBands } from "../js/planner.js";
 
 test("Kanazawa has multiple reachable adventures", () => {
   const results = plan({ stations, services, origin: "kanazawa", latestMinutes: 420, maxTransfers: 2, mode: "normal" });
@@ -65,4 +65,10 @@ test("planner can recommend staying put and honor time bands", () => {
 test("excluded places do not return in a reroll", () => {
   const results = plan({ stations, services, origin: "kanazawa", latestMinutes: 420, maxTransfers: 2, mode: "normal", excluded: ["toyama"] });
   assert.ok(results.every((result) => result.destination.id !== "toyama"));
+});
+
+test("all-day rail intent favors a long railway day without a duplicate mode", () => {
+  assert.equal(Object.hasOwn(modes, "train"), false);
+  const results = plan({ stations, services, origin: "kanazawa", latestMinutes: 500, maxTransfers: 2, mode: "normal", timeBand: "all" });
+  assert.ok(results.some((result) => result.edges.reduce((minutes, edge) => minutes + edge.minutes, 0) >= 300));
 });
