@@ -54,3 +54,13 @@ base or a convenience base for the first train. They carry a rough price-band
 prompt, an area, short rationale, and a map-search link. They are not hotel
 listings, availability, booking advice, accessibility assertions, or price
 quotes; use the link to find and validate current choices.
+
+### Hotel-finding loop
+
+The interface accepts a check-in date, nights, and guests, then hands the
+active stay strategy to a live web search. It cannot inspect availability or
+complete a booking. Instead, the traveler explicitly records that the current
+strategy did not fit (sold out, wrong price, wrong feel), and the interface
+advances through destination-specific alternatives while preserving the rest
+of the day plan. A "candidate found" state records the selected strategy but
+does not claim a booking is held or complete.
