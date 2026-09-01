@@ -1,5 +1,5 @@
-import { stations, services } from "./data.js";
-import { modes, featureLabels, timeBands, plan } from "./planner.js";
+import { stations, services } from "./data.js?v=7943b688";
+import { modes, featureLabels, timeBands, plan } from "./planner.js?v=7943b688";
 
 const state = { origin: "kanazawa", mode: "normal", latestMinutes: 420, transfers: 2, features: [], timeBand: "flexible", excluded: [] };
 const app = document.querySelector("#app");
