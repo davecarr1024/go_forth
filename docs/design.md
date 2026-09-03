@@ -24,7 +24,7 @@ Modes change preference weights, not reachability rules:
 
 - **Quiet** heavily penalizes transfers and sparse services.
 - **All damn day** rail-time intent rewards comfortable, scenic railway time.
-- **Progress** rewards southward movement.
+- **Go South** and **Go North** reward movement in that direction from the current origin.
 - **GranClass** rewards an optional premium segment.
 - **Goblin** rewards odd, scenic, and railfan-interesting routes.
 

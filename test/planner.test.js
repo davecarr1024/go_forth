@@ -72,3 +72,9 @@ test("all-day rail intent favors a long railway day without a duplicate mode", (
   const results = plan({ stations, services, origin: "kanazawa", latestMinutes: 500, maxTransfers: 2, mode: "normal", timeBand: "all" });
   assert.ok(results.some((result) => result.edges.reduce((minutes, edge) => minutes + edge.minutes, 0) >= 300));
 });
+
+test("go north favors a meaningful move north from the current origin", () => {
+  const results = plan({ stations, services, origin: "kanazawa", latestMinutes: 420, maxTransfers: 2, mode: "north" });
+  assert.ok(results.some((result) => result.northward > 0));
+  assert.ok(results.some((result) => result.reasons.includes("a meaningful northward move")));
+});
