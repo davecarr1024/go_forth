@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { stations, services } from "../js/data.js";
-import { modes, plan, timeBands } from "../js/planner.js";
+import { directions, modes, plan, timeBands } from "../js/planner.js";
 
 test("Kanazawa has multiple reachable adventures", () => {
   const results = plan({ stations, services, origin: "kanazawa", latestMinutes: 420, maxTransfers: 2, mode: "normal" });
@@ -73,8 +73,16 @@ test("all-day rail intent favors a long railway day without a duplicate mode", (
   assert.ok(results.some((result) => result.edges.reduce((minutes, edge) => minutes + edge.minutes, 0) >= 300));
 });
 
-test("go north favors a meaningful move north from the current origin", () => {
-  const results = plan({ stations, services, origin: "kanazawa", latestMinutes: 420, maxTransfers: 2, mode: "north" });
+test("direction can trend north independently of the day mode", () => {
+  assert.equal(Object.hasOwn(modes, "north"), false);
+  assert.equal(directions.north.label, "Trend north");
+  const results = plan({ stations, services, origin: "kanazawa", latestMinutes: 420, maxTransfers: 2, mode: "goblin", direction: "north" });
   assert.ok(results.some((result) => result.northward > 0));
   assert.ok(results.some((result) => result.reasons.includes("a meaningful northward move")));
+});
+
+test("direction can trend south independently of the day mode", () => {
+  const results = plan({ stations, services, origin: "kanazawa", latestMinutes: 420, maxTransfers: 2, mode: "quiet", direction: "south" });
+  assert.ok(results.some((result) => result.southward > 0));
+  assert.ok(results.some((result) => result.reasons.includes("a meaningful southward move")));
 });

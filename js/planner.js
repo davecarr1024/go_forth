@@ -1,11 +1,15 @@
 export const modes = {
-  normal: { label: "Open day", icon: "✦", copy: "A little comfort, a little surprise.", transfer: 20, train: 1, scenic: 2, green: 7, gran: 4, south: 2, north: 0, odd: 1 },
-  quiet: { label: "Easy day", icon: "◌", copy: "Fewer changes. Easy landing.", transfer: 70, train: 0.25, scenic: 1, green: 10, gran: 6, south: 1, north: 0, odd: -4 },
-  progress: { label: "Go south", icon: "↓", copy: "Change tomorrow's starting point.", transfer: 25, train: 0.6, scenic: 2, green: 5, gran: 3, south: 11, north: 0, odd: 1 },
-  north: { label: "Go north", icon: "↑", copy: "Change tomorrow's starting point.", transfer: 25, train: 0.6, scenic: 3, green: 5, gran: 3, south: 0, north: 11, odd: 1 },
-  gran: { label: "GranClass", icon: "◇", copy: "A small splurge, if it fits.", transfer: 30, train: 0.8, scenic: 4, green: 9, gran: 32, south: 2, north: 0, odd: 1 },
-  goblin: { label: "Goblin mode", icon: "⌁", copy: "Plausible, unusual, yours.", transfer: 28, train: 1, scenic: 8, green: 2, gran: 1, south: 2, north: 0, odd: 10 },
-  cooked: { label: "I'm cooked", icon: "☾", copy: "Low effort. Good bed. Food nearby.", transfer: 110, train: 0.05, scenic: 0, green: 13, gran: 3, south: 0, north: 0, odd: -8 }
+  normal: { label: "Open day", icon: "✦", copy: "A little comfort, a little surprise.", transfer: 20, train: 1, scenic: 2, green: 7, gran: 4, odd: 1 },
+  quiet: { label: "Easy day", icon: "◌", copy: "Fewer changes. Easy landing.", transfer: 70, train: 0.25, scenic: 1, green: 10, gran: 6, odd: -4 },
+  gran: { label: "GranClass", icon: "◇", copy: "A small splurge, if it fits.", transfer: 30, train: 0.8, scenic: 4, green: 9, gran: 32, odd: 1 },
+  goblin: { label: "Goblin mode", icon: "⌁", copy: "Plausible, unusual, yours.", transfer: 28, train: 1, scenic: 8, green: 2, gran: 1, odd: 10 },
+  cooked: { label: "I'm cooked", icon: "☾", copy: "Low effort. Good bed. Food nearby.", transfer: 110, train: 0.05, scenic: 0, green: 13, gran: 3, odd: -8 }
+};
+
+export const directions = {
+  any: { label: "Anywhere", icon: "↔" },
+  north: { label: "Trend north", icon: "↑" },
+  south: { label: "Trend south", icon: "↓" }
 };
 
 export const featureLabels = {
@@ -23,10 +27,11 @@ export const timeBands = {
   all: { label: "All damn day", min: 420, max: Infinity }
 };
 
-export function plan({ stations, services, origin, latestMinutes, maxTransfers, mode = "normal", desiredFeatures = [], timeBand = "flexible", includeOrigin = false, excluded = [] }) {
+export function plan({ stations, services, origin, latestMinutes, maxTransfers, mode = "normal", direction = "any", desiredFeatures = [], timeBand = "flexible", includeOrigin = false, excluded = [] }) {
   const stationMap = new Map(stations.map((station) => [station.id, station]));
   const originStation = stationMap.get(origin);
   const weights = modes[mode];
+  const directionWeight = direction === "north" ? 11 : direction === "south" ? 11 : 0;
   const routes = new Map([[origin, { minutes: 0, edges: [], transfers: 0 }]]);
   const queue = [origin];
   while (queue.length) {
@@ -50,7 +55,8 @@ export function plan({ stations, services, origin, latestMinutes, maxTransfers, 
     const southward = destination.south - originStation.south;
     const northward = originStation.south - destination.south;
     const allDayRailBonus = timeBand === "all" ? railMinutes * .75 + stats.scenic * 5 + Number(stats.green) * 8 : 0;
-    const score = (destination.hotel + destination.food + destination.interest) * 2 + southward * weights.south + northward * weights.north + stats.scenic * weights.scenic + stats.railfan * weights.odd + Number(stats.green) * weights.green + Number(stats.gran) * weights.gran + matches.length * 28 + railMinutes * weights.train - route.minutes * .25 - route.transfers * weights.transfer - (stats.confidence === "medium" ? 18 : 0) + (inBand ? 32 : timeBand === "flexible" ? 0 : -16) + allDayRailBonus;
+    const directionalBonus = direction === "north" ? northward * directionWeight : direction === "south" ? southward * directionWeight : 0;
+    const score = (destination.hotel + destination.food + destination.interest) * 2 + directionalBonus + stats.scenic * weights.scenic + stats.railfan * weights.odd + Number(stats.green) * weights.green + Number(stats.gran) * weights.gran + matches.length * 28 + railMinutes * weights.train - route.minutes * .25 - route.transfers * weights.transfer - (stats.confidence === "medium" ? 18 : 0) + (inBand ? 32 : timeBand === "flexible" ? 0 : -16) + allDayRailBonus;
     options.push({ ...route, destination, stats, matches, southward, northward, score });
   }
   if (includeOrigin && !excluded.includes(origin)) {
@@ -66,17 +72,17 @@ export function plan({ stations, services, origin, latestMinutes, maxTransfers, 
     if (used.has(key) && used.size > 3) return false;
     used.add(key); return true;
   });
-  return [...stays, ...moving].slice(0, 4).map((option, index) => ({ ...option, kind: option.stay ? "Stay here" : ["Easy", "Best fit", "Go farther", "Wildcard"][index], reasons: reasons(option, weights) }));
+  return [...stays, ...moving].slice(0, 4).map((option, index) => ({ ...option, kind: option.stay ? "Stay here" : ["Easy", "Best fit", "Go farther", "Wildcard"][index], reasons: reasons(option, weights, direction) }));
 }
 
-function reasons(option, weights) {
+function reasons(option, weights, direction) {
   if (option.stay) return [...option.matches.map((feature) => featureLabels[feature]), "You do not need to move today", "Keep the good hotel and decide later"].slice(0, 3);
   const reasons = [];
   if (option.stats.gran && weights.gran > 15) reasons.push("GranClass is on the way");
   else if (option.stats.green) reasons.push("Green Car is available");
   if (option.stats.scenic >= 10) reasons.push("scenic railway time");
-  if (option.southward > 6 && weights.south > 5) reasons.push("a meaningful southward move");
-  if (option.northward > 6 && weights.north > 5) reasons.push("a meaningful northward move");
+  if (option.southward > 2 && direction === "south") reasons.push("a meaningful southward move");
+  if (option.northward > 2 && direction === "north") reasons.push("a meaningful northward move");
   if (option.transfers === 0) reasons.push("no changes");
   if (option.stats.railfan) reasons.push("a little railway weirdness");
   reasons.push("easy place to wake up tomorrow");
