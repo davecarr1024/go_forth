@@ -139,3 +139,78 @@ test("new garden bases and Kamakura are connected to the rail graph", () => {
   const okayamaGardenIdeas = plan({ stations, services, origin: "okayama", latestMinutes: 240, maxTransfers: 1, desiredFeatures: ["garden"] });
   assert.ok(okayamaGardenIdeas.some((idea) => idea.destination.id === "yasugi"));
 });
+
+test("expanded regional lines connect to the wider graph", () => {
+  assert.ok(stations.length >= 60);
+  for (const [a, b, line] of [
+    ["nagoya", "takayama", "Limited Express Hida"],
+    ["nagoya", "matsumoto", "Limited Express Shinano"],
+    ["goshogawara", "fukaura", "Resort Shirakami / Gono Line"],
+    ["wakura_onsen", "anamizu", "Noto Railway"],
+    ["matsuyama", "iyo_ozu", "Iyonada Monogatari / Yosan Line"],
+    ["kubokawa", "uwajima", "Yodo Line / Shimanto Trolley"],
+    ["hakata", "yufuin", "Yufuin no Mori / Kyudai Line"],
+    ["kagoshima", "ibusuki", "Ibusuki no Tamatebako"]
+  ]) {
+    assert.ok(services.some((edge) => edge.from === a && edge.to === b && edge.line === line), `${a} to ${b}`);
+  }
+  assert.ok(stations.every((station) => services.some((edge) => edge.from === station.id && edge.to !== station.id)));
+});
+
+test("rail mode can make a bounded out-and-back ride the day", () => {
+  const results = plan({ stations, services, origin: "kagoshima", latestMinutes: 260, maxTransfers: 1, mode: "rail", timeBand: "few" });
+  const loop = results.find((result) => result.loop && result.edges.some((edge) => edge.to === "ibusuki"));
+  assert.ok(loop);
+  assert.equal(loop.destination.id, "kagoshima");
+  assert.equal(loop.edges.at(-1).to, "kagoshima");
+  assert.ok(loop.minutes <= 260 && loop.transfers <= 1);
+  assert.ok(results.every((result) => result.minutes <= 260));
+  const tight = plan({ stations, services, origin: "kagoshima", latestMinutes: 100, maxTransfers: 1, mode: "rail" });
+  assert.ok(tight.every((result) => !result.loop));
+});
+
+test("interconnected destinations expose distinct route identities", () => {
+  const points = ["a", "b", "c", "d"].map((id) => ({ id, endpoint: id === "d", features: [], south: 0, hotel: 5, food: 5, interest: 5 }));
+  const legs = [
+    { from: "a", to: "b", minutes: 30, headway: 0, line: "River", scenic: 8 },
+    { from: "b", to: "d", minutes: 30, headway: 0, line: "River", scenic: 8 },
+    { from: "a", to: "c", minutes: 30, headway: 0, line: "Mountain", scenic: 10 },
+    { from: "c", to: "d", minutes: 30, headway: 0, line: "Mountain", scenic: 10 }
+  ];
+  const results = plan({ stations: points, services: legs, origin: "a", latestMinutes: 80, maxTransfers: 1, mode: "rail" });
+  assert.equal(results.length, 2);
+  assert.equal(new Set(results.map((result) => result.id)).size, 2);
+  assert.ok(results.every((result) => result.destination.id === "d" && result.minutes <= 80));
+  assert.ok(results.some((result) => result.kind === "Another way there"));
+  const skipped = plan({ stations: points, services: legs, origin: "a", latestMinutes: 80, maxTransfers: 1, mode: "rail", excluded: [results[0].id] });
+  assert.equal(skipped.length, 1);
+  assert.notEqual(skipped[0].id, results[0].id);
+});
+
+test("a same-line continuation does not consume another change", () => {
+  const points = ["a", "b", "c"].map((id) => ({ id, endpoint: id === "c", features: [], south: 0, hotel: 5, food: 5, interest: 5 }));
+  const legs = [
+    { from: "a", to: "b", minutes: 30, headway: 60, line: "Mountain" },
+    { from: "b", to: "c", minutes: 40, headway: 60, line: "Mountain" }
+  ];
+  const results = plan({ stations: points, services: legs, origin: "a", latestMinutes: 100, maxTransfers: 0 });
+  assert.equal(results[0].destination.id, "c");
+  assert.equal(results[0].transfers, 0);
+  assert.equal(results[0].minutes, 100);
+  const scenicLegs = legs.map((leg) => ({ ...leg, scenic: 8 }));
+  const scenic = plan({ stations: points, services: scenicLegs, origin: "a", latestMinutes: 100, maxTransfers: 0 });
+  assert.equal(scenic[0].stats.scenic, 8);
+});
+
+test("a regional circuit can use six legs within three changes", () => {
+  const points = ["a", "b", "c", "d", "e", "f"].map((id) => ({ id, endpoint: true, features: [], south: 0, hotel: 5, food: 5, interest: 5 }));
+  const sequence = ["a", "b", "c", "d", "e", "f", "a"];
+  const lines = ["River", "River", "Coast", "Coast", "Mountain", "Mountain"];
+  const legs = lines.map((line, i) => ({ from: sequence[i], to: sequence[i + 1], minutes: 40, headway: 0, line, scenic: 8 }));
+  const results = plan({ stations: points, services: legs, origin: "a", latestMinutes: 270, maxTransfers: 2, mode: "rail" });
+  const loop = results.find((result) => result.loop);
+  assert.ok(loop);
+  assert.equal(loop.edges.length, 6);
+  assert.equal(loop.transfers, 2);
+  assert.equal(loop.minutes, 264);
+});

@@ -2,7 +2,7 @@
 
 **Go Forth** is an open-ended Japan railway adventure planner. Rather than
 asking where you have already decided to go, it starts from where you are and
-helps you discover plausible, enjoyable places to end the day.
+helps you discover plausible, enjoyable journeys and places to end the day.
 
 > Adventure planning, not departure information. Check current railway
 > information before boarding.
@@ -11,11 +11,12 @@ helps you discover plausible, enjoyable places to end the day.
 
 The v1 is a dependency-free, accessible static web app with:
 
-- a small, hand-authored starter network;
+- a hand-authored network with regional, coastal, and mountain rail corridors;
 - approximate run times and expected waits instead of departures, with an editable
   Japan-time departure and arrival boundary;
-- independent day-feel modes (Open, Easy, GranClass, Goblin, and "I'm cooked") and north/south drift preferences;
-- scored, diverse one-way suggestions with an explanation and confidence note;
+- independent day-feel modes (Open, Easy, GranClass, Goblin, Ride the rails, and "I'm cooked") and north/south drift preferences;
+- scenic returns to the starting base and alternate paths to the same place;
+- scored route suggestions with an explanation and confidence note;
 - keyboard-operable controls and screen-reader-friendly live results.
 
 The [garden atlas](docs/gardens.md) adds 23 researched garden ideas across 16

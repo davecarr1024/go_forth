@@ -1,9 +1,50 @@
 # Starter data
 
 The v1 dataset is a hand-authored, illustrative service-pattern model created
-for interface and routing development. It contains approximate durations,
-frequencies, and annotations inspired by public knowledge of the Japanese rail
-network, but it is **not sourced or validated for operational use**.
+for interface and routing development. Its durations, waiting assumptions,
+comfort flags, and scenic scores are editorial approximations, **not validated
+for operational use**. The regional line topology below was checked against
+operator information in September 2026; that does not validate a particular
+departure, connection, seat, or service day.
+
+## Regional rail expansion
+
+- [JR Central's Hida information](https://railway.jr-central.co.jp/tickets/hida-toyama-waribiki/)
+  and [Takayama Line timetable](https://railway.jr-central.co.jp/time-schedule/srch/_pdf/data/202403/takayama_Inotani_D_e_u.pdf)
+  support the Nagoya–Gifu–Gero–Takayama–Toyama corridor. The Toyama end is
+  sparse in the model and needs a current operating check.
+- [JR Central's Shinano route map](https://jr-central.co.jp/news/release/_pdf/000042834.pdf)
+  supports Nagoya–Kiso-Fukushima–Matsumoto–Nagano. Tokaido and Hokuriku links
+  make this a genuine alternative to other north-country routes.
+- [JR East's Gono Line guide](https://www.jreast.co.jp/akita/gonosen/)
+  and [Resort Shirakami calendar](https://www.jreast.co.jp/en/multi/joyful/shirakami_timetable.html)
+  support the Aomori/Hirosaki–Goshogawara–Fukaura–Higashi-Noshiro–Akita
+  coast. Resort Shirakami is a dated, reserved-seat choice; the direct
+  Aomori–Akita edge represents the full scenic ride, while segment edges let
+  the planner suggest intermediate stops.
+- [JR West's Nanao Line timetable](https://timetable.jr-odekake.net/line-timetable/2849)
+  and [Noto Railway timetable](https://timetable.jr-odekake.net/line-timetable/2839)
+  support Kanazawa–Nanao–Wakura Onsen–Anamizu. The current graph ends at
+  Anamizu and offers a return ride from the rail terminus.
+- [JR Shikoku's Shimanto service](https://www.jr-shikoku.co.jp/01_trainbus/vehicle-info/shimanto.html),
+  [Kochi–Kubokawa sightseeing train](https://www.jr-shikoku.co.jp/yoakenomonogatari/en/),
+  [Yodo Line](https://www.jr-shikoku.co.jp/yodo_line/), and
+  [Iyonada Monogatari](https://www.jr-shikoku.co.jp/01_trainbus/event_train/seat_info/iyonadamonogatari)
+  support an inland/river/coastal circuit through Kochi, Kubokawa, Uwajima,
+  Iyo-Ozu, and Matsuyama. Special trains need date and seat checks.
+- [JR Kyushu's Yufuin no Mori](https://www.jrkyushu.co.jp/english/train/yufuin_no_mori.html),
+  [Aso Boy](https://www.jrkyushu.co.jp/english/train/asoboy.html), and
+  [Ibusuki no Tamatebako](https://www.jrkyushu.co.jp/english/train/ibutama.html)
+  support inland Yufuin/Aso options and a Kagoshima–Ibusuki coastal
+  out-and-back. The model also links Beppu and the east coast so the slower
+  choices can compete with more direct travel. Dates and reservations must be
+  checked with the operator.
+
+The graph intentionally permits multiple edge patterns between a few places
+and a return to the origin. Its connection allowance and half-headway wait are
+rough planning cushions, not proof that two specific trains connect. A card's
+"check date / seats" marker flags sparse or dated scenic services. A day plan is
+an idea to verify against current operator information before travel.
 
 The [garden atlas research](gardens.md) is a separately sourced editorial
 layer: 23 gardens in 16 rail bases, reviewed in September 2026 against garden
@@ -35,7 +76,7 @@ venue is open on a particular day.
 The garden preference tag is derived from sourced garden activities. Selecting
 Gardens brings those activities to the front of destination cards and day plans;
 the garden atlas exposes the full list, including places beyond the current
-four-card result set. Garden transit beyond the rail base is shown separately
+result cards. Garden transit beyond the rail base is shown separately
 and is not included in the planner's rail journey duration.
 
 Hiking and cycling are both destination traits and activity categories. Their

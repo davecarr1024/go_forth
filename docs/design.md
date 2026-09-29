@@ -2,8 +2,8 @@
 
 ## Question
 
-Can a railway planner reveal interesting one-way possibilities from a
-traveler's current state instead of demanding a destination first?
+Can a railway planner reveal interesting journeys, including scenic routes
+and returns to the same base, without demanding a destination first?
 
 ## V1 boundary
 
@@ -15,11 +15,16 @@ traveler verifies the real-world journey before boarding.
 ## Model
 
 Stations are annotated endpoint nodes. Services are directed pattern edges with
-typical duration, approximate headway, comfort options, and confidence. The
-planner adds half a headway as expected wait and penalizes transfers. It
-explores simple routes within the transfer and arrival budgets, scores each
-route by the selected day mode, and keeps the best fitting route per endpoint
-before returning a varied set of cards.
+illustrative duration, approximate headway, comfort options, and confidence.
+The planner adds half a headway as expected wait at boarding and line changes,
+plus a connection allowance at line changes. Consecutive edges on the same
+named service count as one ride. It then enforces the selected arrival and
+change limits and explores simple routes that may close at the origin. Both
+circuits and out-and-back rides can be
+shown without repeatedly harvesting the same scenic edge. It keeps a leading
+route for each endpoint and can show a distinct alternative path to a visible
+endpoint. Route IDs, rather than destination IDs, drive cards, day sheets, and
+session skips.
 
 Modes change preference weights, not reachability rules:
 
@@ -28,6 +33,9 @@ Modes change preference weights, not reachability rules:
 - **Drift** is an independent preference: Anywhere, Trend North, or Trend South from the current origin.
 - **GranClass** rewards an optional premium segment.
 - **Goblin** rewards odd, scenic, and railfan-interesting routes.
+- **Ride the rails** rewards scenic railway time and makes a return to the
+  starting base a valid day plan. The rail-time bands still express a preference;
+  the arrival and change limits are hard constraints.
 
 Selected interests receive places in the small result set when matching
 destinations are reachable; other feasible ideas can still appear. The garden
@@ -44,9 +52,9 @@ arrival boundary. The travel budget is the difference between those times.
 The traveler selects a mood and a desired
 amount of rail time rather than laboriously configuring an itinerary.
 
-Every result supports a new origin in one action. The planner also has an
+Every one-way result supports a new origin in one action. The planner also has an
 explicit stay-here result, an "I'm cooked" low-friction mode, session-only
-"not today" exclusions, and a reroll. These choices express the central rule:
+route skips, and a reroll. These choices express the central rule:
 movement is optional, reassessment is always available, and no plan is owed
 obedience.
 
