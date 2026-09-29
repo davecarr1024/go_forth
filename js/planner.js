@@ -32,33 +32,39 @@ export function plan({ stations, services, origin, latestMinutes, maxTransfers, 
   const originStation = stationMap.get(origin);
   const weights = modes[mode];
   const directionWeight = direction === "north" ? 11 : direction === "south" ? 11 : 0;
-  const routes = new Map([[origin, { minutes: 0, edges: [], transfers: 0 }]]);
-  const queue = [origin];
-  while (queue.length) {
-    const from = queue.shift();
-    const current = routes.get(from);
-    for (const edge of services.filter((candidate) => candidate.from === from)) {
-      const next = { minutes: current.minutes + edge.minutes + edge.headway / 2 + (current.edges.length ? 12 : 0), edges: [...current.edges, edge], transfers: current.edges.length ? current.transfers + 1 : 0 };
-      if (next.minutes > latestMinutes || next.transfers > maxTransfers) continue;
-      if (!routes.has(edge.to) || next.minutes < routes.get(edge.to).minutes) { routes.set(edge.to, next); queue.push(edge.to); }
+  const outgoing = new Map(stations.map((station) => [station.id, []]));
+  for (const edge of services) outgoing.get(edge.from)?.push(edge);
+  const bestByDestination = new Map();
+  const band = timeBands[timeBand] || timeBands.flexible;
+  // Explore simple paths within the transfer budget. Keeping only the fastest
+  // arrival at a station can discard a direct route that leaves a transfer
+  // available, or a scenic route that better fits the selected preferences.
+  const queue = [{ id: origin, minutes: 0, edges: [], transfers: 0, visited: new Set([origin]) }];
+  for (let index = 0; index < queue.length; index++) {
+    const current = queue[index];
+    for (const edge of outgoing.get(current.id) || []) {
+      if (current.visited.has(edge.to)) continue;
+      const route = { minutes: current.minutes + edge.minutes + edge.headway / 2 + (current.edges.length ? 12 : 0), edges: [...current.edges, edge], transfers: current.edges.length };
+      if (route.minutes > latestMinutes || route.transfers > maxTransfers) continue;
+      queue.push({ ...route, id: edge.to, visited: new Set([...current.visited, edge.to]) });
+      const id = edge.to;
+      const destination = stationMap.get(id);
+      if (!destination?.endpoint || excluded.includes(id)) continue;
+      const stats = route.edges.reduce((s, e) => ({ scenic: s.scenic + (e.scenic || 0), railfan: s.railfan + (e.railfan || 0), green: Boolean(s.green || e.green), gran: Boolean(s.gran || e.gran), confidence: s.confidence === "medium" || e.confidence === "medium" ? "medium" : "high" }), { scenic: 0, railfan: 0, green: false, gran: false, confidence: "high" });
+      const matches = destination.features.filter((feature) => desiredFeatures.includes(feature));
+      const railMinutes = route.edges.reduce((sum, e) => sum + e.minutes, 0);
+      const inBand = railMinutes >= band.min && railMinutes <= band.max;
+      const southward = destination.south - originStation.south;
+      const northward = originStation.south - destination.south;
+      const allDayRailBonus = timeBand === "all" ? railMinutes * .75 + stats.scenic * 5 + Number(stats.green) * 8 : 0;
+      const directionalBonus = direction === "north" ? northward * directionWeight : direction === "south" ? southward * directionWeight : 0;
+      const score = (destination.hotel + destination.food + destination.interest) * 2 + directionalBonus + stats.scenic * weights.scenic + stats.railfan * weights.odd + Number(stats.green) * weights.green + Number(stats.gran) * weights.gran + matches.length * 28 + railMinutes * weights.train - route.minutes * .25 - route.transfers * weights.transfer - (stats.confidence === "medium" ? 18 : 0) + (inBand ? 32 : timeBand === "flexible" ? 0 : -16) + allDayRailBonus;
+      if (!bestByDestination.has(id) || score > bestByDestination.get(id).score) {
+        bestByDestination.set(id, { ...route, destination, stats, matches, southward, northward, score });
+      }
     }
   }
-  const options = [];
-  const band = timeBands[timeBand] || timeBands.flexible;
-  for (const [id, route] of routes) {
-    const destination = stationMap.get(id);
-    if (id === origin || !destination?.endpoint || excluded.includes(id)) continue;
-    const stats = route.edges.reduce((s, e) => ({ scenic: s.scenic + (e.scenic || 0), railfan: s.railfan + (e.railfan || 0), green: Boolean(s.green || e.green), gran: Boolean(s.gran || e.gran), confidence: s.confidence === "medium" || e.confidence === "medium" ? "medium" : "high" }), { scenic: 0, railfan: 0, green: false, gran: false, confidence: "high" });
-    const matches = destination.features.filter((feature) => desiredFeatures.includes(feature));
-    const railMinutes = route.edges.reduce((sum, e) => sum + e.minutes, 0);
-    const inBand = railMinutes >= band.min && railMinutes <= band.max;
-    const southward = destination.south - originStation.south;
-    const northward = originStation.south - destination.south;
-    const allDayRailBonus = timeBand === "all" ? railMinutes * .75 + stats.scenic * 5 + Number(stats.green) * 8 : 0;
-    const directionalBonus = direction === "north" ? northward * directionWeight : direction === "south" ? southward * directionWeight : 0;
-    const score = (destination.hotel + destination.food + destination.interest) * 2 + directionalBonus + stats.scenic * weights.scenic + stats.railfan * weights.odd + Number(stats.green) * weights.green + Number(stats.gran) * weights.gran + matches.length * 28 + railMinutes * weights.train - route.minutes * .25 - route.transfers * weights.transfer - (stats.confidence === "medium" ? 18 : 0) + (inBand ? 32 : timeBand === "flexible" ? 0 : -16) + allDayRailBonus;
-    options.push({ ...route, destination, stats, matches, southward, northward, score });
-  }
+  const options = [...bestByDestination.values()];
   if (includeOrigin && !excluded.includes(origin)) {
     const destination = stationMap.get(origin);
     const matches = destination.features.filter((feature) => desiredFeatures.includes(feature));

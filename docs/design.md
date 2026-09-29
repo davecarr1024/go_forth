@@ -16,9 +16,10 @@ traveler verifies the real-world journey before boarding.
 
 Stations are annotated endpoint nodes. Services are directed pattern edges with
 typical duration, approximate headway, comfort options, and confidence. The
-planner adds half a headway as expected wait and penalizes transfers. It finds
-low-cost routes, scores them by the selected day mode, and returns a varied set
-of endpoint cards.
+planner adds half a headway as expected wait and penalizes transfers. It
+explores simple routes within the transfer and arrival budgets, scores each
+route by the selected day mode, and keeps the best fitting route per endpoint
+before returning a varied set of cards.
 
 Modes change preference weights, not reachability rules:
 
@@ -30,8 +31,10 @@ Modes change preference weights, not reachability rules:
 
 ## Right-now interaction
 
-The primary surface is a compact Today bar: current station, local time, and
-the comfortable arrival boundary. The traveler selects a mood and a desired
+The primary surface is a compact Today bar: current station, editable Japan
+departure time (initialized to the current Japan time), and the comfortable
+arrival boundary. The travel budget is the difference between those times.
+The traveler selects a mood and a desired
 amount of rail time rather than laboriously configuring an itinerary.
 
 Every result supports a new origin in one action. The planner also has an

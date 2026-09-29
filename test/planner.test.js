@@ -86,3 +86,28 @@ test("direction can trend south independently of the day mode", () => {
   assert.ok(results.some((result) => result.southward > 0));
   assert.ok(results.some((result) => result.reasons.includes("a meaningful southward move")));
 });
+
+test("a faster path cannot consume the transfer needed for a reachable endpoint", () => {
+  const points = ["a", "b", "c", "d"].map((id) => ({ id, endpoint: id === "d", features: [], south: 0, hotel: 5, food: 5, interest: 5 }));
+  const legs = [
+    { from: "a", to: "c", minutes: 5, headway: 0 },
+    { from: "c", to: "b", minutes: 5, headway: 0 },
+    { from: "a", to: "b", minutes: 30, headway: 0 },
+    { from: "b", to: "d", minutes: 10, headway: 0 }
+  ];
+  const results = plan({ stations: points, services: legs, origin: "a", latestMinutes: 55, maxTransfers: 1 });
+  assert.equal(results[0].destination.id, "d");
+  assert.deepEqual(results[0].edges.map((edge) => edge.to), ["b", "d"]);
+});
+
+test("a preference can select a scenic path over a faster path to the same endpoint", () => {
+  const points = ["a", "b", "d"].map((id) => ({ id, endpoint: id === "d", features: [], south: 0, hotel: 5, food: 5, interest: 5 }));
+  const legs = [
+    { from: "a", to: "d", minutes: 20, headway: 0 },
+    { from: "a", to: "b", minutes: 10, headway: 0, scenic: 15 },
+    { from: "b", to: "d", minutes: 10, headway: 0, scenic: 15 }
+  ];
+  const results = plan({ stations: points, services: legs, origin: "a", latestMinutes: 40, maxTransfers: 1, mode: "goblin" });
+  assert.deepEqual(results[0].edges.map((edge) => edge.to), ["b", "d"]);
+  assert.equal(results[0].stats.scenic, 30);
+});

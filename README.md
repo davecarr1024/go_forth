@@ -12,7 +12,8 @@ helps you discover plausible, enjoyable places to end the day.
 The v1 is a dependency-free, accessible static web app with:
 
 - a small, hand-authored starter network;
-- approximate run times and expected waits instead of departures;
+- approximate run times and expected waits instead of departures, with an editable
+  Japan-time departure and arrival boundary;
 - independent day-feel modes (Open, Easy, GranClass, Goblin, and "I'm cooked") and north/south drift preferences;
 - scored, diverse one-way suggestions with an explanation and confidence note;
 - keyboard-operable controls and screen-reader-friendly live results.
@@ -32,6 +33,7 @@ npx serve .
 
 ```bash
 npm test
+npm run check
 ```
 
 ## Project documents
