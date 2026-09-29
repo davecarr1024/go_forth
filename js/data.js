@@ -1,4 +1,5 @@
 // Illustrative planning data only. See docs/data.md.
+import { gardenCatalog } from "./gardens.js";
 const stop=(id,name,x,y,south,features,values={})=>({id,name,x,y,south,features,endpoint:true,hotel:6,food:6,interest:6,...values});
 export const stations=[
 stop("sapporo","Sapporo",68,5,-20,["easy-food","arcade","baseball","rainy-day","easy-overnight"],{hotel:10,food:10,interest:9}),
@@ -6,26 +7,29 @@ stop("hakodate","Hakodate",64,14,-16,["scenic","seafood","onsen","night-view","e
 stop("aomori","Aomori",61,24,-12,["scenic","seafood","apple","railfan","onsen"],{hotel:7,food:8,interest:8}),
 stop("akita","Akita",53,30,-9,["goblin","sake","rainy-day","easy-food","railfan"],{hotel:7,food:8,interest:7}),
 stop("morioka","Morioka",67,31,-9,["easy-food","noodles","onsen","easy-overnight"],{hotel:7,food:8,interest:7}),
+stop("mito","Mito",79,46,-7,["quiet","scenic","easy-food"],{hotel:7,food:7,interest:9}),
 stop("sendai","Sendai",72,40,-5,["baseball","arcade","easy-food","nightlife","easy-overnight"],{hotel:9,food:9,interest:9}),
 stop("niigata","Niigata",51,40,-5,["sake","seafood","rainy-day","easy-food","easy-overnight"],{hotel:8,food:9,interest:8}),
 stop("yamagata","Yamagata",65,42,-4,["onsen","fruit","quiet","scenic","easy-overnight"],{hotel:7,food:7,interest:7}),
 stop("nagano","Nagano",57,47,-2,["onsen","mountains","quiet","scenic","easy-overnight"],{hotel:7,food:7,interest:7}),
-stop("kanazawa","Kanazawa",38,49,0,["garden","seafood","coffee","easy-food","rainy-day"],{hotel:8,food:9,interest:9}),
+stop("kanazawa","Kanazawa",38,49,0,["seafood","coffee","easy-food","rainy-day"],{hotel:8,food:9,interest:9}),
 stop("toyama","Toyama",47,42,-1,["scenic","seafood","mountains","railfan","easy-overnight"],{hotel:7,food:7,interest:7}),
 stop("fukui","Fukui",34,55,2,["dinosaur","quiet","soba","goblin","easy-overnight"],{hotel:6,food:7,interest:7}),
 stop("tsuruga","Tsuruga",30,59,3,["railfan","seafood","goblin","easy-food","easy-overnight"],{hotel:6,food:7,interest:7}),
-stop("karuizawa","Karuizawa",61,53,-1,["coffee","scenic","quiet","easy-food","garden"],{hotel:8,food:8,interest:8}),
-stop("tokyo","Tokyo",76,54,-3,["arcade","baseball","easy-food","nightlife","garden","easy-overnight"],{hotel:10,food:10,interest:10}),
-stop("kamakura","Kamakura",73,61,0,["sea","temple","scenic","coffee","easy-food"],{hotel:7,food:8,interest:10}),
+stop("karuizawa","Karuizawa",61,53,-1,["coffee","scenic","quiet","easy-food"],{hotel:8,food:8,interest:8}),
+stop("tokyo","Tokyo",76,54,-3,["arcade","baseball","easy-food","nightlife","easy-overnight"],{hotel:10,food:10,interest:10}),
+stop("yokohama","Yokohama",75,59,-2,["sea","coffee","easy-food","easy-overnight"],{hotel:9,food:9,interest:9}),
+stop("kamakura","Kamakura",73,65,0,["sea","temple","scenic","coffee","easy-food"],{hotel:7,food:8,interest:10}),
 stop("maibara","Maibara",38,65,5,["quiet","railfan"],{hotel:5,food:5,interest:5}),
-stop("kyoto","Kyoto",33,70,7,["garden","temple","coffee","easy-food","nightlife"],{hotel:10,food:10,interest:10}),
-stop("nara","Nara",36,78,9,["temple","garden","quiet","scenic","easy-food"],{hotel:7,food:7,interest:10}),
+stop("kyoto","Kyoto",33,70,7,["temple","coffee","easy-food","nightlife"],{hotel:10,food:10,interest:10}),
+stop("nara","Nara",36,78,9,["temple","quiet","scenic","easy-food"],{hotel:7,food:7,interest:10}),
 stop("osaka","Osaka",27,76,8,["arcade","baseball","easy-food","nightlife","goblin","easy-overnight"],{hotel:10,food:10,interest:10}),
 stop("kobe","Kobe",22,78,9,["sea","coffee","night-view","easy-food","baseball"],{hotel:9,food:9,interest:9}),
-stop("himeji","Himeji",17,79,10,["castle","garden","easy-food","scenic","easy-overnight"],{hotel:7,food:8,interest:9}),
-stop("okayama","Okayama",10,75,11,["garden","castle","easy-food","easy-overnight","railfan"],{hotel:7,food:7,interest:7}),
+stop("himeji","Himeji",17,79,10,["castle","easy-food","scenic","easy-overnight"],{hotel:7,food:8,interest:9}),
+stop("okayama","Okayama",10,75,11,["castle","easy-food","easy-overnight","railfan"],{hotel:7,food:7,interest:7}),
+stop("yasugi","Yasugi",7,69,8,["quiet","art","onsen","scenic"],{hotel:5,food:5,interest:9}),
 stop("onomichi","Onomichi",4,78,12,["sea","scenic","goblin","coffee","bike"],{hotel:7,food:8,interest:10}),
-stop("takamatsu","Takamatsu",17,89,13,["udon","garden","sea","easy-food","easy-overnight"],{hotel:8,food:9,interest:9}),
+stop("takamatsu","Takamatsu",17,89,13,["udon","sea","easy-food","easy-overnight"],{hotel:8,food:9,interest:9}),
 stop("kotohira","Kotohira",23,94,15,["onsen","temple","udon","quiet","goblin"],{hotel:7,food:8,interest:9}),
 stop("matsuyama","Matsuyama",9,93,15,["onsen","castle","tram","easy-food","easy-overnight"],{hotel:8,food:8,interest:9}),
 stop("hiroshima","Hiroshima",3,70,13,["baseball","easy-food","nightlife","easy-overnight","scenic"],{hotel:9,food:9,interest:9}),
@@ -33,11 +37,10 @@ stop("miyajimaguchi","Miyajimaguchi",1,75,14,["sea","temple","scenic","oyster","
 stop("kokura","Kokura",2,84,17,["railfan","castle","easy-food","goblin","easy-overnight"],{hotel:8,food:8,interest:8}),
 stop("hakata","Hakata",5,90,19,["baseball","ramen","arcade","easy-food","easy-overnight"],{hotel:10,food:10,interest:10}),
 stop("nagasaki","Nagasaki",0,98,20,["tram","sea","scenic","coffee","goblin"],{hotel:8,food:8,interest:10}),
-stop("kumamoto","Kumamoto",10,99,21,["castle","ramen","garden","easy-food","easy-overnight"],{hotel:8,food:9,interest:9}),
+stop("kumamoto","Kumamoto",10,99,21,["castle","ramen","easy-food","easy-overnight"],{hotel:8,food:9,interest:9}),
 stop("kagoshima","Kagoshima",17,106,23,["volcano","onsen","scenic","ferry","easy-food"],{hotel:8,food:8,interest:10})
 ];
 const activityProfiles={
-  GARDEN:{best:"morning",duration:"90 min",effort:"easy walk",reservation:"none",fromStation:"short local ride"},
   FOOD:{best:"lunch or dinner",duration:"60 min",effort:"easy",reservation:"usually none",fromStation:"station area"},
   BASEBALL:{best:"evening",duration:"3–4 hr",effort:"easy",reservation:"ticket helpful",fromStation:"urban transit"},
   ARCADE:{best:"late afternoon",duration:"1–3 hr",effort:"easy",reservation:"none",fromStation:"station area"},
@@ -55,26 +58,29 @@ const activityCatalog={
   aomori:[activity("ART","Nebuta Museum WA RASSE","A compact, vivid rainy-day stop directly by the station."),activity("FOOD","Aomori apple sweets","Coffee-and-pastry wandering with a strong local angle.")],
   akita:[activity("CULTURE","Akita Museum of Art","A calm city-center stop with strong indoor appeal."),activity("FOOD","Kiritanpo","A specifically northern, comforting dinner mission.")],
   morioka:[activity("FOOD","Wanko soba","A very particular regional meal with built-in story value."),activity("ONSEN","Tsunagi Onsen","An easy decompression branch from the city.")],
+  mito:[activity("CULTURE","Kodokan","The domain school gives Kairakuen useful city context."),activity("FOOD","Mito natto","A local food mission before or after the garden.")],
   sendai:[activity("BASEBALL","Rakuten Mobile Park","A genuinely useful stadium-night endpoint."),activity("FOOD","Gyutan alley","Beef tongue dinner close to the station rhythm.")],
   niigata:[activity("SAKE","Ponshukan","Station sake-tasting arcade: excellent train-day punctuation."),activity("FOOD","Bandai Bridge waterfront","Seafood and a riverside evening walk.")],
   yamagata:[activity("ONSEN","Yamadera","Temple stairs and mountain views when the energy is there."),activity("FOOD","Cherries and fruit parfaits","A seasonal dessert-forward landing.")],
   nagano:[activity("TEMPLE","Zenko-ji","A generous, walkable anchor for an unplanned morning."),activity("FOOD","Shinshu soba","Simple, reliable station-city food.")],
-  kanazawa:[activity("GARDEN","Kenroku-en","Arrive at opening; coffee by the big pond afterwards."),activity("FOOD","Omicho Market","Seafood breakfast or a flexible lunch mission.")],
+  kanazawa:[activity("FOOD","Omicho Market","Seafood breakfast or a flexible lunch mission.")],
   toyama:[activity("SCENIC","Kansui Park","Water, mountains, and a low-friction evening walk."),activity("FOOD","Toyama Bay sushi","A concrete seafood dinner reason to stop.")],
   fukui:[activity("WEIRD","Fukui Prefectural Dinosaur Museum","A real, delightful reason to take the branch."),activity("FOOD","Echizen soba","Local noodles and a calm station night.")],
   tsuruga:[activity("RAIL","New Hokuriku station","Infrastructure nerdery plus an easy southward reset."),activity("FOOD","Seafood bowl","A short, satisfying harbor-city dinner.")],
   karuizawa:[activity("COFFEE","Old Karuizawa Ginza","Coffee, bakeries, and slow wandering."),activity("SCENIC","Kumoba Pond","A quiet nature loop close to the resort-town core.")],
   tokyo:[activity("ARCADE","Akihabara","Rhythm games, model shops, and late curry."),activity("BASEBALL","Tokyo Dome","A stadium-night option with dense food nearby.")],
+  yokohama:[activity("SCENIC","Minato Mirai waterfront","A harbor walk that still leaves room for a garden day."),activity("FOOD","Yokohama Chinatown","A flexible food stop after Sankeien.")],
   kamakura:[activity("SCENIC","Enoden to the water","A small railway adventure with a seaside payoff."),activity("TEMPLE","Great Buddha","A compact, iconic one-way tourist branch.")],
   maibara:[activity("CASTLE","Hikone Castle","A short local branch for a full castle-and-moat afternoon."),activity("CYCLING","Lake Biwa shore","A flat, waterside continuation when the trains have had their turn.")],
-  kyoto:[activity("GARDEN","Murin-an","A quieter garden counterweight to the big headline sites."),activity("FOOD","Nishiki Market","Snack-forward wandering that does not require a reservation.")],
+  kyoto:[activity("FOOD","Nishiki Market","Snack-forward wandering that does not require a reservation.")],
   nara:[activity("TEMPLE","Todai-ji and Nara Park","A coherent afternoon of deer, temple scale, and walking."),activity("FOOD","Kakinoha-zushi","Portable leaf-wrapped sushi with regional texture.")],
   osaka:[activity("ARCADE","DenDen Town","Rhythm games, arcades, and the exact right kind of late night."),activity("BASEBALL","Hanshin Tigers","A high-energy game night with a very specific local feeling.")],
   kobe:[activity("VIEW","Nunobiki Ropeway","A fast mountain-and-harbor perspective shift."),activity("FOOD","Kobe coffeehouses","A civilized, low-energy dinner-and-coffee landing.")],
-  himeji:[activity("CASTLE","Himeji Castle","The castle is close enough to make a one-way stop feel obvious."),activity("GARDEN","Koko-en","A garden pair that makes the castle day breathe.")],
-  okayama:[activity("GARDEN","Koraku-en","A major garden directly useful to a rail itinerary."),activity("FOOD","Demi-katsu","Comfort-food dinner before choosing Shikoku or west tomorrow.")],
+  himeji:[activity("CASTLE","Himeji Castle","The castle is close enough to make a one-way stop feel obvious.")],
+  okayama:[activity("FOOD","Demi-katsu","Comfort-food dinner before choosing Shikoku or west tomorrow.")],
+  yasugi:[activity("ONSEN","Saginoyu Onsen","A calm overnight close to the museum branch."),activity("FOOD","Shimane soba","A regional meal after a long Yakumo ride.")],
   onomichi:[activity("SCENIC","Temple Walk","Hills, lanes, cats, and views over the Inland Sea."),activity("BIKE","Shimanami Kaido start","A branch for when the railway day wants a bicycle sequel.")],
-  takamatsu:[activity("GARDEN","Ritsurin Garden","An opening-time garden with an easy city landing."),activity("FOOD","Sanuki udon","The meal itself is a practical reason to be here.")],
+  takamatsu:[activity("FOOD","Sanuki udon","The meal itself is a practical reason to be here.")],
   kotohira:[activity("ONSEN","Kotohira onsen","A proper one-night reward at the end of a branch."),activity("TEMPLE","Konpira-san","A climb with a clear sense of arrival.")],
   matsuyama:[activity("ONSEN","Dogo Onsen","A classic bathhouse endpoint with tram texture."),activity("CASTLE","Matsuyama Castle","Ropeway-or-walk castle hill above town.")],
   hiroshima:[activity("BASEBALL","Mazda Zoom-Zoom Stadium","A real evening event that makes the endpoint feel complete."),activity("FOOD","Okonomiyaki","Layered Hiroshima-style dinner, easy to choose.")],
@@ -82,8 +88,8 @@ const activityCatalog={
   kokura:[activity("RAIL","Kyushu Railway Museum","A serious rail side quest just across the strait."),activity("FOOD","Yaki-udon","An easy local dinner with real origin-story energy.")],
   hakata:[activity("BASEBALL","Fukuoka SoftBank Hawks","A stadium-night endpoint with all-city convenience."),activity("FOOD","Yatai ramen","Late, flexible street-stall ramen energy.")],
   nagasaki:[activity("TRAM","Streetcar wandering","The trams are a gentle way to make the city the activity."),activity("VIEW","Inasayama night view","A dramatic finish to a southern rail day.")],
-  kumamoto:[activity("CASTLE","Kumamoto Castle","A major fortress visit with a city-center base."),activity("GARDEN","Suizenji Jojuen","A compact garden reset after the castle.")],
-  kagoshima:[activity("GARDEN","Sengan-en","Garden, volcano view, and a deeply specific southern landing."),activity("FERRY","Sakurajima","A ferry-and-volcano branch that makes tomorrow interesting.")]
+  kumamoto:[activity("CASTLE","Kumamoto Castle","A major fortress visit with a city-center base.")],
+  kagoshima:[activity("FERRY","Sakurajima","A ferry-and-volcano branch that makes tomorrow interesting.")]
 };
 const activeTravelCatalog={
   sapporo:[activity("HIKING","Mt. Moiwa","A short city-edge summit for a broad view over Sapporo.")],
@@ -127,6 +133,7 @@ const specialStay={
   aomori:["Waterfront northern night","A compact harbor stay keeps the museum, market, and first train neatly together.","Aomori Station waterfront"],
   akita:["Sake-and-rainy-day hideout","A central stay makes a low-key evening feel intentional rather than stranded.","Akita Station / Kawabata"],
   morioka:["Noodle-city reset","Stay central for an unhurried regional dinner before the next long rail leg.","Morioka Station / Odori"],
+  mito:["Kairakuen morning base","Stay close to Mito Station so the garden bus remains a simple next-day choice.","Mito Station"],
   sendai:["Stadium-night base","A central hotel leaves room for baseball, arcades, and a calm late return.","Sendai Station / Ichibancho"],
   niigata:["Sake arcade overnight","Stay by the station for a minimal-friction Ponshukan-and-seafood evening.","Niigata Station / Bandai"],
   yamagata:["Mountain branch overnight","A quiet central base leaves you ready for Yamadera or an onsen turn tomorrow.","Yamagata Station"],
@@ -137,6 +144,7 @@ const specialStay={
   tsuruga:["New-station reset","A simple station stay is useful when the rail junction itself is the side quest.","Tsuruga Station"],
   karuizawa:["Slow resort-town night","Old Karuizawa makes a coffee-and-bike day feel like a proper small escape.","Old Karuizawa / Karuizawa Station"],
   tokyo:["Late-night urban base","Pick a dense neighborhood where arcade, curry, and a first train all coexist.","Ikebukuro / Shinagawa"],
+  yokohama:["Harbor-and-garden base","A central room gives you time for the Sankeien bus and a relaxed waterfront evening.","Yokohama Station / Sakuragicho"],
   kamakura:["Seaside temple overnight","A small stay near the water buys you a gentler Enoden morning.","Kamakura Station / Yuigahama"],
   maibara:["Lake Biwa reset","A practical base near the station is enough for the castle-or-cycle branch.","Maibara Station / Hikone"],
   kyoto:["Garden-before-crowds stay","Choose a quieter east-side or central base for an early garden start.","Higashiyama / Kyoto Station"],
@@ -145,6 +153,7 @@ const specialStay={
   kobe:["Harbor-and-mountain split","A central stay lets you choose ropeway, coffeehouse, or waterfront at the last minute.","Sannomiya / Kitano"],
   himeji:["Castle-opening overnight","Stay near the station so the castle can be a fresh-morning decision.","Himeji Station"],
   okayama:["Crossroads comfort night","A station-side base is perfect for garden time before choosing your next branch.","Okayama Station / Korakuen"],
+  yasugi:["Museum-and-onsen branch","Saginoyu Onsen makes the museum visit the center of an unhurried overnight.","Saginoyu Onsen / Yasugi Station"],
   onomichi:["Hills-and-harbor sleepover","A waterfront or hillside stay makes the temple walk feel less like a day trip.","Onomichi waterfront"],
   takamatsu:["Garden-and-udon base","A central stay is ideal for Ritsurin at opening and a flexible Shikoku day.","Takamatsu Station / Ritsurin"],
   kotohira:["Onsen reward night","This is the place to trade efficiency for a ryokan, bath, and kaiseki dinner.","Kotohira Onsen"],
@@ -159,7 +168,9 @@ const specialStay={
 };
 stations.forEach((station)=>{
   const active=activeTravelCatalog[station.id]||[];
-  station.activities=[...(activityCatalog[station.id]||[]),...active];
+  const gardens=gardenCatalog[station.id]||[];
+  station.activities=[...(activityCatalog[station.id]||[]),...gardens.map((item)=>({...item})),...active];
+  if(gardens.length) station.features.push("garden");
   station.features.push(...active.map((item)=>item.kind==="HIKING"?"hike":"cycle"));
   const [title,detail,area]=specialStay[station.id];
   const late=station.features.includes("goblin")||station.features.includes("arcade")||station.features.includes("nightlife");
@@ -181,6 +192,8 @@ const railProfiles={
   "Limited Express Shiokaze":{rideNote:"A scenic Shikoku branch with a more old-school rail rhythm.",window:"The Seto crossing is the visual reward.",ekiben:"Okayama is the easy place to stock up."},
   "Nishi-Kyushu Shinkansen":{rideNote:"A southern branch that turns the route into the adventure.",window:"The western landscape gets greener and more folded.",ekiben:"Hakata is the reliable boarding-food stop."},
   "Kyushu Shinkansen":{rideNote:"A fast southern extension with room left for side quests.",window:"Look out for the broad, volcanic south-country feel.",ekiben:"Hakata and Kumamoto are useful food stops."},
+  "Limited Express Hitachi / Tokiwa":{rideNote:"A direct northeast branch for a garden-led Mito day.",window:"The city thins out as the Joban corridor heads north.",ekiben:"A Tokyo Station snack is an easy start."},
+  "Limited Express Yakumo":{rideNote:"A mountain-crossing branch that gives the museum a railway story.",window:"Watch the landscape shift on the Hakubi route.",ekiben:"Okayama is the easy food stop before this longer ride."},
   default:{rideNote:"A useful rail link that keeps the day open.",window:"Take the window seat if the weather is good.",ekiben:"A station snack makes the connection easier."}
 };
 const railProfile=(line)=>railProfiles[line]||railProfiles.default;
@@ -192,11 +205,15 @@ export const services=[
 ...pair("aomori","morioka",115,40,"Tohoku Shinkansen",{green:true,scenic:7}),
 ...pair("morioka","sendai",80,25,"Tohoku Shinkansen",{green:true,scenic:5}),
 ...pair("sendai","tokyo",95,15,"Tohoku Shinkansen",{green:true,gran:true,scenic:5}),
+...pair("tokyo","mito",85,30,"Limited Express Hitachi / Tokiwa",{green:true,scenic:3}),
 ...pair("akita","morioka",95,60,"Akita Shinkansen",{green:true,scenic:8,railfan:4}),
 ...pair("yamagata","sendai",75,60,"Senzan Line",{green:false,scenic:8,railfan:4}),
 ...pair("niigata","tokyo",120,20,"Joetsu Shinkansen",{green:true,scenic:5}),
 ...pair("nagano","karuizawa",30,30,"Hokuriku Shinkansen",{green:true,scenic:6}),
 ...pair("karuizawa","tokyo",65,30,"Hokuriku Shinkansen",{green:true,gran:true,scenic:5}),
+...pair("tokyo","yokohama",30,10,"Tokaido Line",{green:false,scenic:2}),
+...pair("tokyo","kamakura",55,15,"Yokosuka Line",{green:false,scenic:4}),
+...pair("yokohama","kamakura",25,15,"Yokosuka Line",{green:false,scenic:4}),
 ...pair("kanazawa","toyama",22,20,"Hokuriku Shinkansen",{green:true,scenic:4}),
 ...pair("kanazawa","tsuruga",55,30,"Hokuriku Shinkansen",{green:true,scenic:6}),
 ...pair("kanazawa","nagano",65,30,"Hokuriku Shinkansen",{green:true,scenic:6}),
@@ -209,6 +226,7 @@ export const services=[
 ...pair("osaka","kobe",22,15,"JR Kobe Line",{green:false,scenic:4}),
 ...pair("osaka","himeji",60,15,"Sanyo Shinkansen",{green:true,scenic:5}),
 ...pair("himeji","okayama",22,20,"Sanyo Shinkansen",{green:true,scenic:5}),
+...pair("okayama","yasugi",140,60,"Limited Express Yakumo",{green:true,scenic:8,railfan:5}),
 ...pair("okayama","onomichi",65,30,"Sanyo Main Line",{green:false,scenic:8,railfan:5}),
 ...pair("okayama","takamatsu",55,40,"Marine Liner",{green:true,scenic:9,railfan:6}),
 ...pair("takamatsu","kotohira",55,30,"Dosan Line",{green:false,scenic:7,railfan:4}),

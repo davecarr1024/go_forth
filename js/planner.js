@@ -73,12 +73,20 @@ export function plan({ stations, services, origin, latestMinutes, maxTransfers, 
   }
   const stays = options.filter((option) => option.stay);
   const used = new Set();
-  const moving = options.filter((option) => !option.stay).sort((a, b) => b.score - a.score).filter((option) => {
+  const sorted = options.filter((option) => !option.stay).sort((a, b) => b.score - a.score);
+  // A chosen interest should appear in the small result set when reachable,
+  // while other strong possibilities remain available for comparison.
+  const preferred = desiredFeatures.length ? sorted.filter((option) => option.matches.length).slice(0, 3) : [];
+  const moving = [...preferred, ...sorted.filter((option) => !preferred.includes(option))].filter((option) => {
     const key = String(option.stats.gran) + String(option.stats.scenic > 10) + String(option.destination.south > 7);
     if (used.has(key) && used.size > 3) return false;
     used.add(key); return true;
   });
-  return [...stays, ...moving].slice(0, 4).map((option, index) => ({ ...option, kind: option.stay ? "Stay here" : ["Easy", "Best fit", "Go farther", "Wildcard"][index], reasons: reasons(option, weights, direction) }));
+  return [...stays, ...moving].slice(0, 4).map((option, index) => ({
+    ...option,
+    kind: option.stay ? "Stay here" : desiredFeatures.includes("garden") && option.matches.includes("garden") ? "Garden idea" : ["Easy", "Best fit", "Go farther", "Wildcard"][index],
+    reasons: reasons(option, weights, direction)
+  }));
 }
 
 function reasons(option, weights, direction) {

@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { stations, services } from "../js/data.js";
+import { gardenCatalog } from "../js/gardens.js";
 import { directions, modes, plan, timeBands } from "../js/planner.js";
 
 test("Kanazawa has multiple reachable adventures", () => {
@@ -28,7 +29,7 @@ test("starter network has broad destination coverage and feature-led results", (
 
 test("every destination has concrete starter activities", () => {
   assert.ok(stations.every((station) => station.activities?.length >= 2));
-  assert.equal(stations.find((station) => station.id === "kanazawa").activities[0].name, "Kenroku-en");
+  assert.ok(stations.find((station) => station.id === "kanazawa").activities.some((activity) => activity.name === "Kenroku-en"));
 });
 
 test("active-travel activities are available as destination traits", () => {
@@ -38,8 +39,8 @@ test("active-travel activities are available as destination traits", () => {
 });
 
 test("activities and rail legs carry usable planning metadata", () => {
-  const garden = stations.find((station) => station.id === "kanazawa").activities[0];
-  assert.equal(garden.best, "morning");
+  const garden = stations.find((station) => station.id === "kanazawa").activities.find((activity) => activity.name === "Kenroku-en");
+  assert.equal(garden.best, "daylight");
   assert.match(garden.mapUrl, /google\.com\/maps/);
   assert.ok(services.every((service) => service.rideNote && service.window && service.ekiben));
 });
@@ -52,7 +53,7 @@ test("every destination has categorized, sourceable stay ideas", () => {
 
 test("map searches carry the destination city for disambiguation", () => {
   const kanazawa = stations.find((station) => station.id === "kanazawa");
-  assert.match(decodeURIComponent(kanazawa.activities[0].mapUrl), /Kenroku-en Kanazawa Japan/);
+  assert.match(decodeURIComponent(kanazawa.activities.find((activity) => activity.name === "Kenroku-en").mapUrl), /Kenroku-en Kanazawa Japan/);
   assert.match(decodeURIComponent(kanazawa.stays[0].mapUrl), /Kanazawa Station Kanazawa Japan/);
 });
 
@@ -110,4 +111,31 @@ test("a preference can select a scenic path over a faster path to the same endpo
   const results = plan({ stations: points, services: legs, origin: "a", latestMinutes: 40, maxTransfers: 1, mode: "goblin" });
   assert.deepEqual(results[0].edges.map((edge) => edge.to), ["b", "d"]);
   assert.equal(results[0].stats.scenic, 30);
+});
+
+test("garden atlas covers the requested gardens with sourced local access", () => {
+  const gardens = stations.flatMap((station) => station.activities.filter((activity) => activity.kind === "GARDEN").map((activity) => ({ ...activity, city: station.name })));
+  const names = gardens.map((garden) => garden.name);
+  assert.ok(Object.keys(gardenCatalog).every((id) => stations.some((station) => station.id === id)));
+  for (const name of ["Sankeien", "Rikugien", "Adachi Museum of Art gardens", "Kenroku-en", "Okayama Korakuen", "Kairakuen"]) {
+    assert.ok(names.includes(name), `${name} is in the atlas`);
+  }
+  assert.equal(gardens.length, 23);
+  assert.equal(new Set(names).size, gardens.length);
+  assert.ok(gardens.every((garden) => garden.sourceUrl.startsWith("https://") && garden.fromStation && garden.mapUrl.includes(encodeURIComponent(garden.city))));
+  assert.ok(stations.every((station) => station.features.includes("garden") === station.activities.some((activity) => activity.kind === "GARDEN")));
+});
+
+test("new garden bases and Kamakura are connected to the rail graph", () => {
+  assert.ok(stations.every((station) => services.some((service) => service.from === station.id)));
+  for (const id of ["mito", "yokohama", "yasugi", "kamakura"]) {
+    assert.ok(services.some((service) => service.from === id), `${id} has an onward rail edge`);
+    assert.ok(services.some((service) => service.to === id), `${id} has an inbound rail edge`);
+  }
+  const tokyoGardenIdeas = plan({ stations, services, origin: "tokyo", latestMinutes: 240, maxTransfers: 1, desiredFeatures: ["garden"] });
+  assert.ok(tokyoGardenIdeas.some((idea) => idea.destination.id === "mito"));
+  assert.ok(tokyoGardenIdeas.some((idea) => idea.destination.id === "yokohama"));
+  assert.ok(tokyoGardenIdeas.filter((idea) => idea.matches.includes("garden")).length >= 3);
+  const okayamaGardenIdeas = plan({ stations, services, origin: "okayama", latestMinutes: 240, maxTransfers: 1, desiredFeatures: ["garden"] });
+  assert.ok(okayamaGardenIdeas.some((idea) => idea.destination.id === "yasugi"));
 });

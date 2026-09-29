@@ -29,6 +29,13 @@ Modes change preference weights, not reachability rules:
 - **GranClass** rewards an optional premium segment.
 - **Goblin** rewards odd, scenic, and railfan-interesting routes.
 
+Selected interests receive places in the small result set when matching
+destinations are reachable; other feasible ideas can still appear. The garden
+atlas adds a sourced editorial layer of 23 gardens in 16 rail bases. A garden
+result is a rail journey to a base city, followed by a separately described
+local connection. The app shows official garden links and does not count local
+transit, walking, garden hours, or museum shuttles in its rail duration.
+
 ## Right-now interaction
 
 The primary surface is a compact Today bar: current station, editable Japan

@@ -5,6 +5,12 @@ for interface and routing development. It contains approximate durations,
 frequencies, and annotations inspired by public knowledge of the Japanese rail
 network, but it is **not sourced or validated for operational use**.
 
+The [garden atlas research](gardens.md) is a separately sourced editorial
+layer: 23 gardens in 16 rail bases, reviewed in September 2026 against garden
+operators and official local tourism sources. Each garden stores a source link
+and a coarse local-access note. These sources confirm the place and connection;
+they do not turn the starter rail graph into a current timetable.
+
 It intentionally avoids copying a live timetable. Before any wider or
 production-quality dataset is added, imports must record their source,
 licensing terms, transformation, release date, and validation results.
@@ -25,6 +31,12 @@ category, a durable landmark, food, event type, or local experience, and a
 short explanation of why it makes the endpoint worth choosing. These are
 curated planning prompts—not listings, booking integrations, or claims that a
 venue is open on a particular day.
+
+The garden preference tag is derived from sourced garden activities. Selecting
+Gardens brings those activities to the front of destination cards and day plans;
+the garden atlas exposes the full list, including places beyond the current
+four-card result set. Garden transit beyond the rail base is shown separately
+and is not included in the planner's rail journey duration.
 
 Hiking and cycling are both destination traits and activity categories. Their
 activity cards name a starter trail, hill walk, waterfront loop, or regional
